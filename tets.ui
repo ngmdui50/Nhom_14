@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1500</width>
+    <height>774</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>0</y>
+      <width>591</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>20</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Hệ thống quản lý dịch vụ đặt lịch khám</string>
+    </property>
+   </widget>
+   <widget class="QFrame" name="frame">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>191</width>
+      <height>731</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QWidget" name="verticalLayoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>40</y>
+       <width>171</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QPushButton" name="pushButton">
+        <property name="text">
+         <string>Bác Sĩ</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="verticalLayoutWidget_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>100</y>
+       <width>171</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QPushButton" name="pushButton_2">
+        <property name="text">
+         <string>Bệnh Nhân</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="verticalLayoutWidget_3">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>160</y>
+       <width>171</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QPushButton" name="pushButton_3">
+        <property name="text">
+         <string>Lịch Khám</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="verticalLayoutWidget_4">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>220</y>
+       <width>171</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <widget class="QPushButton" name="pushButton_4">
+        <property name="text">
+         <string>Dịch Vụ</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="verticalLayoutWidget_5">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>280</y>
+       <width>171</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_5">
+      <item>
+       <widget class="QPushButton" name="pushButton_5">
+        <property name="text">
+         <string>Phòng Khám</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_4">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>171</width>
+       <height>321</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>13</pointsize>
+      </font>
+     </property>
+     <property name="title">
+      <string>Quản Lý</string>
+     </property>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_5">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>330</y>
+       <width>171</width>
+       <height>341</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Chức Năng</string>
+     </property>
+     <widget class="QPushButton" name="pushButton_6">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>40</y>
+        <width>171</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Thêm</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_7">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>90</y>
+        <width>171</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Sửa</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_8">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>140</y>
+        <width>171</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Xóa</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_9">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>190</y>
+        <width>171</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Tìm Kiếm</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QStackedWidget" name="stackedWidget">
+    <property name="geometry">
+     <rect>
+      <x>199</x>
+      <y>49</y>
+      <width>931</width>
+      <height>721</height>
+     </rect>
+    </property>
+    <widget class="QWidget" name="page">
+     <widget class="QGroupBox" name="groupBox_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>0</y>
+        <width>911</width>
+        <height>451</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>13</pointsize>
+        <italic>false</italic>
+       </font>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="title">
+       <string>Danh sách</string>
+      </property>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_3">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>450</y>
+        <width>911</width>
+        <height>211</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>13</pointsize>
+       </font>
+      </property>
+      <property name="title">
+       <string>Thông Tin</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="page_2"/>
+   </widget>
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
+     <rect>
+      <x>1150</x>
+      <y>50</y>
+      <width>341</width>
+      <height>451</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>13</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>Lịch khám sắp tới </string>
+    </property>
+   </widget>
+   <widget class="QCalendarWidget" name="calendarWidget">
+    <property name="geometry">
+     <rect>
+      <x>1150</x>
+      <y>510</y>
+      <width>341</width>
+      <height>201</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1500</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuQu_n_l">
+    <property name="title">
+     <string>Quản lý</string>
+    </property>
+    <addaction name="actionB_c_S"/>
+    <addaction name="actionPh_ng_Kh_m"/>
+    <addaction name="actionH_s_B_nh_nh_n"/>
+    <addaction name="actionD_ch_v"/>
+    <addaction name="actionL_ch_Kh_m"/>
+   </widget>
+   <widget class="QMenu" name="menuH_Th_ng">
+    <property name="title">
+     <string>Hệ Thống</string>
+    </property>
+    <addaction name="actionProfile"/>
+    <addaction name="action_ng_xu_t"/>
+   </widget>
+   <widget class="QMenu" name="menuTh_ng_K">
+    <property name="title">
+     <string>Thống Kê</string>
+    </property>
+    <addaction name="actionTh_ng_k_theo_th_ng"/>
+    <addaction name="actionTh_ng_k_l_t_kh_m"/>
+    <addaction name="actionTh_ng_k"/>
+   </widget>
+   <addaction name="menuQu_n_l"/>
+   <addaction name="menuH_Th_ng"/>
+   <addaction name="menuTh_ng_K"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionB_c_S">
+   <property name="text">
+    <string>Bác Sĩ</string>
+   </property>
+  </action>
+  <action name="actionPh_ng_Kh_m">
+   <property name="text">
+    <string>Phòng Khám</string>
+   </property>
+  </action>
+  <action name="actionH_s_B_nh_nh_n">
+   <property name="text">
+    <string>Hồ sơ Bệnh nhân</string>
+   </property>
+  </action>
+  <action name="actionProfile">
+   <property name="text">
+    <string>Profile</string>
+   </property>
+  </action>
+  <action name="action_ng_xu_t">
+   <property name="text">
+    <string>Đăng xuất</string>
+   </property>
+  </action>
+  <action name="actionTh_ng_k_theo_th_ng">
+   <property name="text">
+    <string>Thống kê theo tháng</string>
+   </property>
+  </action>
+  <action name="actionTh_ng_k_l_t_kh_m">
+   <property name="text">
+    <string>Thống kê lượt khám</string>
+   </property>
+  </action>
+  <action name="actionTh_ng_k">
+   <property name="text">
+    <string>Thống kê </string>
+   </property>
+  </action>
+  <action name="actionD_ch_v">
+   <property name="text">
+    <string>Dịch vụ</string>
+   </property>
+  </action>
+  <action name="actionL_ch_Kh_m">
+   <property name="text">
+    <string>Lịch Khám</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
