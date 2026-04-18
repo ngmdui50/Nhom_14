@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>FormThongKe</class>
+ <widget class="QWidget" name="FormThongKe">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>911</width><height>660</height></rect></property>
+  <layout class="QVBoxLayout" name="mainLayout">
+   <item>
+    <widget class="QGroupBox" name="groupFilter">
+     <property name="maximumSize"><size><width>16777215</width><height>150</height></size></property>
+     <property name="title"><string>Bộ lọc thống kê</string></property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0"><widget class="QLabel"><property name="text"><string>Chọn Thời Gian</string></property></widget></item>
+      <item row="1" column="0"><widget class="QComboBox" name="cboxthoigian"/></item>
+      <item row="0" column="1"><widget class="QLabel"><property name="text"><string>Loại Thống Kê</string></property></widget></item>
+      <item row="1" column="1"><widget class="QComboBox" name="cboxloai"/></item>
+      <item row="1" column="2">
+       <layout class="QHBoxLayout">
+        <item><widget class="QPushButton" name="btnthongke"><property name="text"><string>Thống Kê</string></property></widget></item>
+        <item><widget class="QPushButton" name="btnxuatfile"><property name="text"><string>Xuất File Excel</string></property></widget></item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupResult">
+     <property name="title"><string>Kết quả thống kê</string></property>
+     <layout class="QVBoxLayout"><item><widget class="QTableWidget" name="tableThongKe"/></item></layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+</ui>
