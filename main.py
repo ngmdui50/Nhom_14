@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import sys
 import os
 from datetime import datetime
@@ -545,3 +546,17 @@ if __name__ == "__main__":
     login.login_successful.connect(main_win.show)
     login.show()
     sys.exit(app.exec())
+=======
+from PyQt6 import uic
+from PyQt6.QtWidgets import QApplication, QMessageBox
+import sys
+import re
+class DangKyApp:
+    def __init__(self):
+        self.ui = uic.loadUi("Giaodienchinh.ui")
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = DangKyApp()
+    window.ui.show()
+    sys.exit(app.exec())
+>>>>>>> f0d104235b8bff095ca1edb1614a6c8a518d82c7
