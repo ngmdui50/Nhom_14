@@ -9,7 +9,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import QTimer, QDateTime, pyqtSignal, Qt
 
 from Model.connecDB import fetch_one
-
+from Controller.taikhoan_Controller import TaiKhoanController
 # ================= IMPORT HELPER & CONTROLLER =================
 try:
     from Helper.TimelineHelper import TimelineDrawer
@@ -55,7 +55,19 @@ class MainApp(QMainWindow):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_time)
         self.timer.start(1000)
+        self.apply_style()
 
+    def apply_style(self):
+        """Hàm nạp file QSS với đường dẫn tuyệt đối"""
+        try:
+            # Lấy đường dẫn tệp style.qss nằm cùng thư mục với file python này
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            qss_file = os.path.join(current_dir, "style.qss")
+            
+            with open(qss_file, "r", encoding="utf-8") as f:
+                self.setStyleSheet(f.read())
+        except Exception as e:
+            print(f"Lỗi khi nạp file CSS: {e}")
     def init_ui(self):
         uic.loadUi("View/Giaodienchinh.ui", self)
         self.formChucNang = uic.loadUi("View/GiaodienChucnang.ui")
@@ -75,325 +87,13 @@ class MainApp(QMainWindow):
             "TK": uic.loadUi("View/formThongKe.ui"),
             "DT": uic.loadUi("View/FormDoanhThu.ui"),
             "TKLK": uic.loadUi("View/formThongKeLichKham.ui"),
+            "TAIKHOAN": uic.loadUi("View/FormTaiKhoan.ui"),
         }
 
         for form in self.forms.values():
             self.formChucNang.stackedWidgetMain.addWidget(form)
 
-        self.setStyleSheet("""
-            /* ================================================= */
-            /* 1. MÀU NỀN TỔNG THỂ & SCROLLBAR (MACOS STYLE)     */
-            /* ================================================= */
-            QMainWindow {
-                background-color: #0B0E14; /* Deep Midnight Blue */
-                font-family: 'Segoe UI Variable', 'Segoe UI', sans-serif;
-                color: #E2E8F0;
-            }
-
-            QFrame#frame { background-color: transparent; border: none; }
-
-            /* Thanh cuộn siêu mượt và hiện đại */
-            QScrollBar:vertical {
-                border: none;
-                background: transparent;
-                width: 8px;
-                margin: 0px;
-            }
-            QScrollBar::handle:vertical {
-                background: #2A3143;
-                border-radius: 4px;
-                min-height: 30px;
-            }
-            QScrollBar::handle:vertical:hover { background: #4B5563; }
-            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { border: none; background: none; }
-            QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: transparent; }
-
-            /* ================================================= */
-            /* 2. CÁC KHỐI CHỨC NĂNG (CARD DESIGN)               */
-            /* ================================================= */
-            QGroupBox {
-                background-color: #151A27;
-                border: 1px solid #1E2538;
-                border-radius: 14px;
-                margin-top: 25px;
-                padding-top: -2px;
-            }
-            
-            QGroupBox::title {
-                subcontrol-origin: margin;
-                subcontrol-position: top center;
-                padding: 6px 24px;
-                background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #7380E8, stop:1 #00E5FF);
-                color: #000000;
-                border-radius: 12px;
-                font-size: 13px;
-                font-weight: 900;
-                text-transform: uppercase;
-                letter-spacing: 1.5px;
-            }
-
-            QGroupBox#groupTrangChu {
-                background-color: #151A27;
-                border-radius: 14px;
-                border: 1px solid #1E2538;
-                margin-top: 20px;
-            }
-            QGroupBox#groupTrangChu::title { background-color: transparent; }
-
-            /* ================================================= */
-            /* 3. MENU BÊN TRÁI (NEON HOVER EFFECT)              */
-            /* ================================================= */
-            QPushButton {
-                background-color: transparent;
-                color: #94A3B8;
-                border: none;
-                border-radius: 8px;
-                padding: 12px 15px;
-                font-size: 14px;
-                font-weight: 600;
-                text-align: left;
-                border-left: 3px solid transparent; /* Dành chỗ cho viền active */
-            }
-            
-            QPushButton:hover {
-                background-color: rgba(115, 128, 232, 0.1);
-                color: #FFFFFF;
-                border-left: 3px solid #7380E8; /* Viền sáng lên bên trái */
-                padding-left: 20px; /* Chữ trượt mượt mà sang phải */
-            }
-            
-            QPushButton:pressed {
-                background-color: rgba(0, 229, 255, 0.2);
-                color: #00E5FF;
-                border-left: 3px solid #00E5FF;
-            }
-            
-            /* Nút Trang chủ làm nổi bật hẳn lên */
-            QPushButton#btntrangchu {
-                background-color: rgba(0, 229, 255, 0.05);
-                color: #00E5FF;
-                border-left: 3px solid transparent;
-            }
-            QPushButton#btntrangchu:hover {
-                background-color: rgba(0, 229, 255, 0.15);
-                color: #FFFFFF;
-                border-left: 3px solid #00E5FF;
-                padding-left: 20px;
-            }
-
-            /* ================================================= */
-            /* 4. BẢNG DỮ LIỆU (PREMIUM DATA TABLE)              */
-            /* ================================================= */
-            QTableWidget {
-                background-color: transparent;
-                color: #E2E8F0;
-                border: none;
-                gridline-color: transparent; /* Xóa lưới dọc ngang */
-                font-size: 13px;
-                outline: none; /* Bỏ viền khi click */
-            }
-            
-            /* Chỉnh từng ô trong bảng */
-            QTableWidget::item {
-                padding: 8px;
-                border-bottom: 1px solid #1E2538; /* Chỉ để lại dòng kẻ ngang mờ */
-            }
-            
-            /* Khi chọn 1 dòng */
-            QTableWidget::item:selected {
-                background-color: rgba(0, 229, 255, 0.15);
-                color: #00E5FF;
-                font-weight: bold;
-            }
-            
-            /* Tiêu đề bảng */
-            QHeaderView::section {
-                background-color: #0F131D;
-                color: #94A3B8;
-                border: none;
-                border-bottom: 2px solid #2A3143;
-                padding: 10px;
-                font-weight: 800;
-                text-transform: uppercase;
-                font-size: 11px;
-                letter-spacing: 1px;
-            }
-
-            /* ================================================= */
-            /* 5. TEXT & NHẬP LIỆU (ĐÃ FIX LỖI MẤT KHUNG & ID)   */
-            /* ================================================= */
-            
-            /* Chữ mô tả, tiêu đề nhỏ (Mặc định trắng sáng cho các form) */
-            QLabel {
-                font-size: 13px;
-                color: #FFFFFF;
-                background: transparent;
-            }
-            
-            /* BẢO VỆ TIÊU ĐỀ CHÍNH - LÀM MÀU RIÊNG CHO NÓ */
-            QLabel#label {
-                color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #7380E8, stop:1 #00E5FF);
-                font-size: 26px;
-                font-weight: 900;
-                padding-left: 10px;
-                letter-spacing: 0.5px;
-                font-family: 'Segoe UI Black', 'Arial Black', sans-serif;
-            }
-
-            /* Fix triệt để nếu ở dưới Form bạn lỡ đặt tên ObjectName cũng là 'label' */
-            /* (Ép nó trở lại bình thường, không lấy Gradient) */
-            QStackedWidget QLabel#label {
-                color: #FFFFFF;
-                font-size: 13px;
-                font-weight: normal;
-                padding-left: 0px;
-                letter-spacing: 0px;
-            }
-
-            /* BẢO VỆ ĐỒNG HỒ */
-            QLabel#lblTime {
-                color: #00E5FF;
-                font-size: 15px;
-                font-weight: 900;
-                background-color: rgba(0, 229, 255, 0.05);
-                border-radius: 15px;
-                border: 1px solid rgba(0, 229, 255, 0.2);
-                padding: 6px 18px;
-                letter-spacing: 1px;
-            }
-            
-            /* KHUNG NHẬP LIỆU ĐÃ ĐƯỢC LÀM SÁNG LÊN */
-            QLineEdit, QComboBox, QDateEdit, QTimeEdit, QSpinBox, QTextEdit {
-                font-size: 14px;
-                padding: 8px 12px;
-                border: 1.5px solid #4B5563; /* Viền xám sáng hơn nhiều để tạo khung rõ ràng */
-                border-radius: 8px;
-                background-color: #1E2538; /* Nền sáng hơn nền card để ô nhập nổi lên */
-                color: #FFFFFF;
-            }
-            
-            /* Hiệu ứng phát sáng rực rỡ khi click vào để gõ chữ */
-            QLineEdit:focus, QComboBox:focus, QDateEdit:focus, QTimeEdit:focus, QSpinBox:focus, QTextEdit:focus {
-                border: 2px solid #00E5FF; /* Khung neon xanh hiện lên */
-                background-color: #151A27;
-            }
-            
-            /* Chỉnh nút mũi tên của ComboBox và Ngày tháng */
-            QComboBox::drop-down, QDateEdit::drop-down, QTimeEdit::drop-down {
-                border: none;
-                width: 30px;
-            }
-            
-            /* Ẩn dấu chấm bi (Size Grip) thừa ở góc phải dưới cùng */
-            QSizeGrip {
-                width: 0px;
-                height: 0px;
-                background: transparent;
-            }
-
-            /* ================================================= */
-            /* 6. MENU BAR (QMenuBar & QMenu) Ở TRÊN CÙNG        */
-            /* ================================================= */
-            
-            QMenuBar {
-                background-color: #0F131D;
-                color: #94A3B8;
-                border-bottom: 1px solid #1E2538;
-                font-size: 13px;
-                font-weight: bold;
-            }
-            
-            QMenuBar::item {
-                spacing: 3px;
-                padding: 6px 12px;
-                background: transparent;
-                border-radius: 4px;
-                margin-top: 2px;
-                margin-bottom: 2px;
-            }
-            
-            QMenuBar::item:selected {
-                background: rgba(0, 229, 255, 0.15);
-                color: #00E5FF;
-            }
-            
-            QMenuBar::item:pressed {
-                background: rgba(0, 229, 255, 0.3);
-            }
-            
-            QMenu {
-                background-color: #151A27;
-                color: #E2E8F0;
-                border: 1px solid #2A3143;
-                border-radius: 6px;
-                padding: 5px;
-            }
-            
-            QMenu::item {
-                padding: 8px 30px 8px 20px;
-                border-radius: 4px;
-                font-size: 13px;
-            }
-            
-            QMenu::item:selected {
-                background-color: rgba(115, 128, 232, 0.2);
-                color: #00E5FF;
-                font-weight: bold;
-            }
-            
-            QMenu::separator {
-                height: 1px;
-                background: #2A3143;
-                margin: 4px 10px;
-            }
-            
-            /* ================================================= */
-            /* 7. KHUNG TIMELINE CHỐNG TRẮNG MẮT                 */
-            /* ================================================= */
-            QGraphicsView {
-                background-color: #0B0E14; /* Ép màu nền tối đồng bộ */
-                border: none; /* Xóa viền trắng */
-                outline: none; /* Xóa nét đứt khi click chuột vào */
-            }
-
-            /* Khử nền của trang chứa Timeline nếu có */
-            QWidget#pageTimeline, QWidget#Timeline {
-                background-color: #0B0E14;
-            }
-
-            /* ================================================= */
-            /* 8. CÁC Ô THỐNG KÊ DƯỚI CÙNG (DASHBOARD CARDS)     */
-            /* ================================================= */
-            /* Áp dụng chung cho các QFrame đóng vai trò là Card thống kê */
-            QFrame {
-                background-color: transparent;
-            }
-
-            /* Nếu bạn dùng QFrame cho các ô thống kê, hãy đổi màu cho nó nổi bật */
-            QFrame#frameThongKe1, QFrame#frameThongKe2, QFrame#frameThongKe3, QFrame#frameThongKe4,
-            QFrame#frame_2, QFrame#frame_3, QFrame#frame_4 /* Thay bằng đúng ID frame của bạn */ {
-                background-color: #121824; /* Nền card sáng hơn nền app một chút */
-                border: 1px solid #1E2538;
-                border-radius: 12px;
-            }
-
-            /* Hiệu ứng phát sáng nhẹ khi hover chuột vào ô thống kê */
-            QFrame#frameThongKe1:hover, QFrame#frameThongKe2:hover, QFrame#frameThongKe3:hover, QFrame#frameThongKe4:hover,
-            QFrame#frame_2:hover, QFrame#frame_3:hover, QFrame#frame_4:hover {
-                border: 1px solid #00E5FF;
-                background-color: rgba(0, 229, 255, 0.05);
-            }
-
-            /* Label số lượng lớn (VD: Số 15, Số 20...) trong ô thống kê */
-            QLabel#lblTotalValue, QLabel#lblTongBN, QLabel#lblTongBS {
-                color: #00E5FF;
-                font-size: 28px;
-                font-weight: 900;
-                background: transparent;
-                border: none;
-            }
-        """)
-
+        
     def connect_events(self):
         self.btntrangchu.clicked.connect(self.hien_thi_timeline)
 
@@ -413,6 +113,7 @@ class MainApp(QMainWindow):
 
         # Menu trên cùng
         self.actionProfile.triggered.connect(lambda: self.mo_tab(self.forms["PROFILE"], None))
+        self.actionT_i_Kho_n.triggered.connect(lambda: self.mo_tab(self.forms["TAIKHOAN"], self.load_data_taikhoan))
         self.actionTh_ng_k.triggered.connect(lambda: self.mo_tab(self.forms["TK"], None))
         self.actionTh_ng_k_l_t_kh_m.triggered.connect(lambda: self.mo_tab(self.forms["TKLK"], None))
         self.actionDxuat.triggered.connect(self.dang_xuat)
@@ -495,7 +196,16 @@ class MainApp(QMainWindow):
                     elif val == "Đã khám": item.setForeground(Qt.GlobalColor.green)
                     elif val == "Đã hủy": item.setForeground(Qt.GlobalColor.red)
                 table.setItem(r, c, item)
-
+    def load_data_taikhoan(self):
+        """Hàm lấy dữ liệu từ DB và đổ lên tableTaiKhoan"""
+        try:
+            headers = ["ID", "Username", "Password", "Họ Tên", "Quyền"]
+            data = TaiKhoanController.get_all()
+            
+            # Đổ dữ liệu vào tableTaiKhoan nằm trong form TAIKHOAN
+            self.fill_table(self.forms["TAIKHOAN"].tableTaiKhoan, data, headers)
+        except Exception as e:
+            print(f"Lỗi load dữ liệu bảng tài khoản: {e}")
     def load_data_dichvu(self):
         self.fill_table(self.forms["DV"].tableDichVu, DichVuController.get_all(),
                         ["ID", "Tên Dịch Vụ", "Đơn Giá"])

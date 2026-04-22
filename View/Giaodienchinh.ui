@@ -364,6 +364,7 @@
      <string>Hệ Thống</string>
     </property>
     <addaction name="actionProfile"/>
+    <addaction name="actionT_i_Kho_n"/>
    </widget>
    <widget class="QMenu" name="menuTh_ng_K">
     <property name="title">
@@ -437,6 +438,11 @@
   <action name="actionDxuat">
    <property name="text">
     <string>Đăng Xuất</string>
+   </property>
+  </action>
+  <action name="actionT_i_Kho_n">
+   <property name="text">
+    <string>Tài Khoản</string>
    </property>
   </action>
  </widget>
