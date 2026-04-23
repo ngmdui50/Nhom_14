@@ -13,21 +13,22 @@ class DoanhThuController:
         except Exception as e:
             print(f"Lỗi truy vấn danh sách doanh thu: {e}")
             return []
+    @staticmethod
+    def insert(lichkham_id, tong_tien, ngay, ten_bn):
+        sql = "INSERT INTO DoanhThu (lichkham_id, tong_tien, ngay_thanh_toan, TenBenhNhan) VALUES (%s, %s, %s, %s)"
+        return execute_query(sql, (lichkham_id, tong_tien, ngay, ten_bn))
 
-    def xu_ly_thanh_toan(id_lich_kham):
-        sql = """
-            SELECT DichVu.DonGia 
-            FROM LichKham 
-            JOIN DichVu ON LichKham.dichvu_id = DichVu.id 
-            WHERE LichKham.id = ?
-        """
-        result = fetch_one(sql, (id_lich_kham,))
-        
-        if result:
-            gia_tien = result['DonGia']
-            
-            # 2. Lưu vào bảng DoanhThu
-            sql_insert = "INSERT INTO DoanhThu (lichkham_id, tong_tien) VALUES (?, ?)"
-            execute_query(sql_insert, (id_lich_kham, gia_tien))
-            return True
-        return False
+    @staticmethod
+    def update(id_val, tong_tien, ngay):
+        sql = "UPDATE DoanhThu SET tong_tien = %s, ngay_thanh_toan = %s WHERE id = %s"
+        return execute_query(sql, (tong_tien, ngay, id_val))
+
+    @staticmethod
+    def delete(id_val):
+        sql = "DELETE FROM DoanhThu WHERE id = %s"
+        return execute_query(sql, (id_val,))
+
+    @staticmethod
+    def search(keyword):
+        sql = "SELECT * FROM DoanhThu WHERE TenBenhNhan LIKE %s OR lichkham_id LIKE %s"
+        return fetch_all(sql, (f"%{keyword}%", f"%{keyword}%"))

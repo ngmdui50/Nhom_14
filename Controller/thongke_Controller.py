@@ -23,3 +23,14 @@ class ThongKeController:
             ORDER BY lk.ngay_kham DESC
         """
         return fetch_all(sql)
+    @staticmethod
+    def thong_ke_theo_thang(thang, nam):
+        """Lọc dữ liệu thống kê theo tháng cụ thể"""
+        sql = """
+            SELECT lk.ngay_kham, bs.ten_bac_si, bn.ten_benh_nhan, lk.TrangThai
+            FROM LichKham lk
+            JOIN BacSi bs ON lk.bacsi_id = bs.id
+            JOIN BenhNhan bn ON lk.benhnhan_id = bn.id
+            WHERE MONTH(lk.ngay_kham) = %s AND YEAR(lk.ngay_kham) = %s
+        """
+        return fetch_all(sql, (thang, nam))
