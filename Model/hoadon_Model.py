@@ -1,4 +1,4 @@
-class DoanhThu:
+class HoaDon:
     def __init__(self, id, lichkham_id, tong_tien, ngay_thanh_toan, TenBenhNhan):
         self.id = id
         self.lichkham_id = lichkham_id

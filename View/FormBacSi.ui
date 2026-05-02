@@ -40,7 +40,7 @@
      </property>
      <layout class="QGridLayout">
       <item row="0" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="lblIDBS">
         <property name="text">
          <string>ID Bác sĩ</string>
         </property>
@@ -82,6 +82,32 @@
       </item>
       <item row="3" column="1">
        <widget class="QLineEdit" name="txtChuyenKhoa"/>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLabel" name="lblCaLamBS">
+        <property name="text">
+         <string>Ca Làm</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QComboBox" name="cboCaLamBS">
+        <item>
+         <property name="text">
+          <string>1 - Ca Sáng</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>2 - Ca Chiều</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>3 - Ca Tối</string>
+         </property>
+        </item>
+       </widget>
       </item>
      </layout>
     </widget>

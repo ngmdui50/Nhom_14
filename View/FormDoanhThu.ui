@@ -49,7 +49,7 @@
       <item row="1" column="0">
        <widget class="QLineEdit" name="txtIDDoanhThu">
         <property name="readOnly">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -63,7 +63,7 @@
       <item row="1" column="1">
        <widget class="QLineEdit" name="txtIDLichKham">
         <property name="readOnly">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -77,7 +77,7 @@
       <item row="3" column="0">
        <widget class="QLineEdit" name="txtTongTien">
         <property name="readOnly">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -91,7 +91,7 @@
       <item row="3" column="1">
        <widget class="QLineEdit" name="txtNgayThanhToan">
         <property name="readOnly">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
        </widget>
       </item>

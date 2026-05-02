@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>FormBenhNhan</class>
- <widget class="QWidget" name="FormBenhNhan">
+ <class>FormCaLam</class>
+ <widget class="QWidget" name="FormCaLam">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -17,11 +17,11 @@
    <item>
     <widget class="QGroupBox" name="groupList">
      <property name="title">
-      <string>Danh sách bệnh nhân</string>
+      <string>Danh sách Ca Làm</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_list">
       <item>
-       <widget class="QTableWidget" name="tableBenhNhan">
+       <widget class="QTableWidget" name="tableCaLam">
         <property name="editTriggers">
          <set>QAbstractItemView::NoEditTriggers</set>
         </property>
@@ -45,72 +45,52 @@
       </size>
      </property>
      <property name="title">
-      <string>Thông tin chi tiết bệnh nhân</string>
+      <string>Thông tin chi tiết</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_info">
       <item row="0" column="0">
-       <widget class="QLabel" name="lblIDBN">
+       <widget class="QLabel" name="lblIDCL">
         <property name="text">
-         <string>ID Bệnh Nhân</string>
+         <string>ID Ca làm:</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QLineEdit" name="txtIDBN">
+       <widget class="QLineEdit" name="txtIDCa">
         <property name="readOnly">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>Họ và Tên</string>
+         <string>Tên Ca:</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLineEdit" name="txtTenBN"/>
+       <widget class="QLineEdit" name="txtTenCa"/>
       </item>
       <item row="0" column="2">
-       <widget class="QLabel" name="label_4">
+       <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>Địa chỉ</string>
+         <string>Giờ bắt đầu:</string>
         </property>
        </widget>
       </item>
       <item row="1" column="2">
-       <widget class="QLineEdit" name="txtDiaChi"/>
+       <widget class="QLineEdit" name="txtGioBD"/>
       </item>
       <item row="2" column="0">
-       <widget class="QLabel" name="label_3">
+       <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>Số điện thoại</string>
+         <string>Giờ kết thúc:</string>
         </property>
        </widget>
       </item>
       <item row="3" column="0">
-       <widget class="QLineEdit" name="txtSDT"/>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>Giới tính</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QLineEdit" name="txtGioiTinh"/>
-      </item>
-      <item row="2" column="2">
-       <widget class="QLabel" name="label_6">
-        <property name="text">
-         <string>Ngày sinh</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2">
-       <widget class="QLineEdit" name="txtNgaySinh"/>
+       <widget class="QLineEdit" name="txtGioKT"/>
       </item>
      </layout>
     </widget>

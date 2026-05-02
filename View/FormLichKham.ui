@@ -28,62 +28,73 @@
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>220</height>
+       <height>280</height>
       </size>
      </property>
      <property name="title">
-      <string>Thông tin lịch khám</string>
+      <string>Thông tin chi tiết Lịch khám</string>
      </property>
      <layout class="QGridLayout">
       <item row="0" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="lblIDLK">
         <property name="text">
          <string>ID Lịch</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QLineEdit" name="txtIDLich"/>
+       <widget class="QLineEdit" name="txtIDLich">
+        <property name="readOnly">
+         <bool>false</bool>
+        </property>
+       </widget>
       </item>
       <item row="0" column="1">
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>ID Bệnh Nhân</string>
+         <string>Chọn Bệnh Nhân</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLineEdit" name="txtIDBN_Lich"/>
+       <widget class="QComboBox" name="cboBN_Lich"/>
       </item>
       <item row="0" column="2">
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>ID Bác Sĩ</string>
+         <string>Chọn Bác Sĩ</string>
         </property>
        </widget>
       </item>
       <item row="1" column="2">
-       <widget class="QLineEdit" name="txtIDBS_Lich"/>
+       <widget class="QComboBox" name="cboBS_Lich"/>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Ngày Khám</string>
+         <string>Phòng Khám</string>
         </property>
        </widget>
       </item>
       <item row="3" column="0">
-       <widget class="QLineEdit" name="txtNgayKham"/>
+       <widget class="QComboBox" name="cboPK_Lich"/>
       </item>
       <item row="2" column="1">
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Giờ Khám</string>
+         <string>Dịch Vụ Khám</string>
         </property>
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QLineEdit" name="txtGioKham"/>
+       <widget class="QComboBox" name="cboDV_Lich"/>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Trạng Thái</string>
+        </property>
+       </widget>
       </item>
       <item row="3" column="2">
        <widget class="QComboBox" name="comboBoxTrangThai">
@@ -99,21 +110,60 @@
         </item>
         <item>
          <property name="text">
-          <string>Đã Hủy</string>
+          <string>Đã Xong</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Đã Xong</string>
+          <string>Đã Hủy</string>
          </property>
         </item>
        </widget>
       </item>
-      <item row="2" column="2">
-       <widget class="QLabel" name="label_2">
+      <item row="4" column="0">
+       <widget class="QLabel" name="label">
         <property name="text">
-         <string>Trạng Thái</string>
+         <string>Ngày Khám</string>
         </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLineEdit" name="txtNgayKham"/>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Giờ Khám</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QLineEdit" name="txtGioKham"/>
+      </item>
+      <item row="4" column="2">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Ca Làm (Xác định Bác sĩ)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="2">
+       <widget class="QComboBox" name="cboCaLamLich">
+        <item>
+         <property name="text">
+          <string>1 - Ca Sáng</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>2 - Ca Chiều</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>3 - Ca Tối</string>
+         </property>
+        </item>
        </widget>
       </item>
      </layout>

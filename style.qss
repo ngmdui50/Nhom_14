@@ -258,3 +258,41 @@ QLabel#lblTotalValue, QLabel#lblTongBN, QLabel#lblTongBS {
     font-size: 28px;
     font-weight: 900;
 }
+/* Card thiết kế cho danh sách lịch khám */
+QFrame#cardLichKham {
+    background-color: #1A202C;
+    border: 1px solid #2D3748;
+    border-radius: 8px;
+}
+
+QFrame#cardLichKham:hover {
+    border: 1px solid #00E5FF;
+    background-color: #2D3748;
+}
+
+/* Đảm bảo 3 ô thống kê có cùng cỡ chữ và không bị lệch */
+QLabel#lblRevenueValue, QLabel#lblCompletedValue, QLabel#lblTotalValue {
+    font-size: 24px;
+    font-weight: 900;
+    color: #00E5FF;
+}
+
+/* Đồng bộ hóa khung chứa 3 ô thống kê */
+QFrame#frameRevenue, QFrame#frameCompleted, QFrame#frameTotal {
+    min-height: 110px;
+    max-height: 130px;
+}
+QFrame#cardLichKham {
+    background-color: #1A202C;
+    border: 1px solid #2D3748;
+    border-radius: 8px;
+}
+QFrame#cardLichKham:hover {
+    border: 1px solid #00E5FF;
+    background-color: #2D3748;
+}
+QListWidget {
+    background-color: transparent;
+    border: none;
+    outline: none;
+}

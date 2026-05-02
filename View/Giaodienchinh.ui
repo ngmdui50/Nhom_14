@@ -51,9 +51,9 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>30</y>
+       <y>40</y>
        <width>171</width>
-       <height>61</height>
+       <height>41</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
@@ -80,7 +80,7 @@
        <x>10</x>
        <y>90</y>
        <width>171</width>
-       <height>61</height>
+       <height>41</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -93,102 +93,6 @@
         </property>
         <property name="text">
          <string>Bệnh Nhân</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-    <widget class="QWidget" name="verticalLayoutWidget_3">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>150</y>
-       <width>171</width>
-       <height>61</height>
-      </rect>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <item>
-       <widget class="QPushButton" name="btnLichKham">
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Lịch Khám</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-    <widget class="QWidget" name="verticalLayoutWidget_4">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>210</y>
-       <width>171</width>
-       <height>61</height>
-      </rect>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_4">
-      <item>
-       <widget class="QPushButton" name="btnDichVu">
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Dịch Vụ</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-    <widget class="QWidget" name="verticalLayoutWidget_5">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>270</y>
-       <width>171</width>
-       <height>61</height>
-      </rect>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_5">
-      <item>
-       <widget class="QPushButton" name="btnPhongKham">
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Phòng Khám</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-    <widget class="QWidget" name="verticalLayoutWidget_6">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>330</y>
-       <width>171</width>
-       <height>61</height>
-      </rect>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_6">
-      <item>
-       <widget class="QPushButton" name="btnDoanhThu">
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Doanh Thu</string>
         </property>
        </widget>
       </item>
@@ -211,14 +115,134 @@
      <property name="title">
       <string>Quản Lý</string>
      </property>
+     <widget class="QWidget" name="verticalLayoutWidget_5">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>230</y>
+        <width>171</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <widget class="QPushButton" name="btnPhongKham">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Phòng Khám</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="verticalLayoutWidget_3">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>130</y>
+        <width>171</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QPushButton" name="btnLichKham">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Lịch Khám</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="verticalLayoutWidget_4">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>180</y>
+        <width>171</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QPushButton" name="btnDichVu">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Dịch Vụ</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="verticalLayoutWidget_6">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>280</y>
+        <width>171</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <widget class="QPushButton" name="btnDoanhThu">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Hóa Đơn</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="verticalLayoutWidget_7">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>330</y>
+        <width>169</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_7">
+       <item>
+        <widget class="QPushButton" name="btnCaLam">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Ca Làm</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
     <widget class="QGroupBox" name="groupBox_5">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>410</y>
+       <y>400</y>
        <width>171</width>
-       <height>351</height>
+       <height>361</height>
       </rect>
      </property>
      <property name="font">
@@ -233,7 +257,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>240</y>
+        <y>220</y>
         <width>171</width>
         <height>41</height>
        </rect>
@@ -246,7 +270,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>90</y>
+        <y>70</y>
         <width>171</width>
         <height>41</height>
        </rect>
@@ -259,7 +283,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>140</y>
+        <y>120</y>
         <width>171</width>
         <height>41</height>
        </rect>
@@ -272,7 +296,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>190</y>
+        <y>170</y>
         <width>171</width>
         <height>41</height>
        </rect>
@@ -285,7 +309,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>40</y>
+        <y>20</y>
         <width>171</width>
         <height>41</height>
        </rect>
@@ -294,14 +318,23 @@
        <string>Trang chủ</string>
       </property>
      </widget>
+     <widget class="QPushButton" name="btnxoaDL">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>270</y>
+        <width>171</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Xóa dữ liệu</string>
+      </property>
+     </widget>
     </widget>
     <zorder>groupBox_4</zorder>
     <zorder>verticalLayoutWidget</zorder>
     <zorder>verticalLayoutWidget_2</zorder>
-    <zorder>verticalLayoutWidget_3</zorder>
-    <zorder>verticalLayoutWidget_4</zorder>
-    <zorder>verticalLayoutWidget_5</zorder>
-    <zorder>verticalLayoutWidget_6</zorder>
     <zorder>groupBox_5</zorder>
    </widget>
    <widget class="QLabel" name="lblTime">
@@ -309,7 +342,7 @@
      <rect>
       <x>1150</x>
       <y>15</y>
-      <width>151</width>
+      <width>231</width>
       <height>31</height>
      </rect>
     </property>
@@ -370,7 +403,6 @@
     <property name="title">
      <string>Thống Kê</string>
     </property>
-    <addaction name="actionTh_ng_k_l_t_kh_m"/>
     <addaction name="actionTh_ng_k"/>
    </widget>
    <widget class="QMenu" name="menuTho_t">
