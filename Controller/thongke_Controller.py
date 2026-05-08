@@ -28,7 +28,7 @@ class ThongKeController:
                 lk.gio_kham,
                 lk.TrangThai AS trang_thai
             FROM LichKham lk
-            JOIN BacSi bs ON lk.bacsi_id = bs.id
+            JOIN BacSi_Moi bs ON lk.bacsi_id = bs.id
             JOIN BenhNhan bn ON lk.benhnhan_id = bn.id
         """
         params = ()

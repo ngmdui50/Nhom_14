@@ -1,298 +1,405 @@
-/* ================================================= */
-/* 1. MÀU NỀN TỔNG THỂ & SCROLLBAR (MACOS STYLE)     */
-/* ================================================= */
 QMainWindow {
-    background-color: #0B0E14; /* Deep Midnight Blue */
-    font-family: 'Segoe UI Variable', 'Segoe UI', sans-serif;
-    color: #E2E8F0;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #f7f8fc, stop:0.55 #eef3fb, stop:1 #e7eef8);
+    color: #172033;
+    font-family: "Segoe UI Variable", "Segoe UI", sans-serif;
 }
 
-QFrame#frame { background-color: transparent; border: none; }
+QWidget {
+    color: #172033;
+}
 
-/* Thanh cuộn siêu mượt và hiện đại */
-QScrollBar:vertical {
-    border: none;
+QFrame#frame {
     background: transparent;
-    width: 8px;
-    margin: 0px;
+    border: none;
 }
-QScrollBar::handle:vertical {
-    background: #2A3143;
-    border-radius: 4px;
-    min-height: 30px;
-}
-QScrollBar::handle:vertical:hover { background: #4B5563; }
-QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { border: none; background: none; }
-QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: transparent; }
 
-/* ================================================= */
-/* 2. CÁC KHỐI CHỨC NĂNG (CARD DESIGN)               */
-/* ================================================= */
+QFrame#sidebarNavCard, QFrame#sidebarActionCard {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #dbe7f4;
+    border-radius: 24px;
+}
+
+QLabel#sidebarSectionTitle {
+    color: #5b6f90;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0 8px 8px 8px;
+}
+
 QGroupBox {
-    background-color: #151A27;
-    border: 1px solid #1E2538;
-    border-radius: 14px;
-    margin-top: 25px;
-    padding-top: -2px;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid #dbe4f0;
+    border-radius: 22px;
+    margin-top: 16px;
+    padding-top: 16px;
 }
 
 QGroupBox::title {
     subcontrol-origin: margin;
-    subcontrol-position: top center;
-    padding: 6px 24px;
-    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #7380E8, stop:1 #00E5FF);
-    color: #000000;
-    border-radius: 12px;
+    subcontrol-position: top left;
+    padding: 0 10px;
+    left: 14px;
+    color: #2563eb;
+    background: transparent;
     font-size: 13px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
+    font-weight: 700;
 }
 
 QGroupBox#groupTrangChu {
-    background-color: #151A27;
-    border-radius: 14px;
-    border: 1px solid #1E2538;
-    margin-top: 20px;
-}
-QGroupBox#groupTrangChu::title { background-color: transparent; }
-
-/* ================================================= */
-/* 3. MENU BÊN TRÁI (NEON HOVER EFFECT)              */
-/* ================================================= */
-QPushButton {
-    background-color: transparent;
-    color: #94A3B8;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 15px;
-    font-size: 14px;
-    font-weight: 600;
-    text-align: left;
-    border-left: 3px solid transparent;
+    background: rgba(255, 255, 255, 0.62);
+    border: 1px solid rgba(211, 221, 234, 0.86);
+    border-radius: 26px;
 }
 
-QPushButton:hover {
-    background-color: rgba(115, 128, 232, 0.1);
-    color: #FFFFFF;
-    border-left: 3px solid #7380E8;
-    padding-left: 20px;
-}
-
-QPushButton:pressed {
-    background-color: rgba(0, 229, 255, 0.2);
-    color: #00E5FF;
-    border-left: 3px solid #00E5FF;
-}
-
-QPushButton#btntrangchu {
-    background-color: rgba(0, 229, 255, 0.05);
-    color: #00E5FF;
-    border-left: 3px solid transparent;
-}
-QPushButton#btntrangchu:hover {
-    background-color: rgba(0, 229, 255, 0.15);
-    color: #FFFFFF;
-    border-left: 3px solid #00E5FF;
-    padding-left: 20px;
-}
-
-/* ================================================= */
-/* 4. BẢNG DỮ LIỆU (PREMIUM DATA TABLE)              */
-/* ================================================= */
-QTableWidget {
-    background-color: transparent;
-    color: #E2E8F0;
-    border: none;
-    gridline-color: transparent;
-    font-size: 13px;
-    outline: none;
-}
-
-QTableWidget::item {
-    padding: 8px;
-    border-bottom: 1px solid #1E2538;
-}
-
-QTableWidget::item:selected {
-    background-color: rgba(0, 229, 255, 0.15);
-    color: #00E5FF;
-    font-weight: bold;
-}
-
-QHeaderView::section {
-    background-color: #0F131D;
-    color: #94A3B8;
-    border: none;
-    border-bottom: 2px solid #2A3143;
-    padding: 10px;
-    font-weight: 800;
-    text-transform: uppercase;
-    font-size: 11px;
-    letter-spacing: 1px;
-}
-
-/* ================================================= */
-/* 5. TEXT & NHẬP LIỆU                               */
-/* ================================================= */
 QLabel {
     font-size: 13px;
-    color: #FFFFFF;
+    color: #223049;
     background: transparent;
 }
 
 QLabel#label {
-    color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #7380E8, stop:1 #00E5FF);
-    font-size: 26px;
-    font-weight: 900;
-    padding-left: 10px;
-    letter-spacing: 0.5px;
-    font-family: 'Segoe UI Black', 'Arial Black', sans-serif;
-}
-
-QStackedWidget QLabel#label {
-    color: #FFFFFF;
-    font-size: 13px;
-    font-weight: normal;
-    padding-left: 0px;
-    letter-spacing: 0px;
+    color: #0f172a;
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+    padding-left: 6px;
 }
 
 QLabel#lblTime {
-    color: #00E5FF;
-    font-size: 15px;
-    font-weight: 900;
-    background-color: rgba(0, 229, 255, 0.05);
-    border-radius: 15px;
-    border: 1px solid rgba(0, 229, 255, 0.2);
-    padding: 6px 18px;
-    letter-spacing: 1px;
+    color: #1d4ed8;
+    font-size: 14px;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.82);
+    border: 1px solid #d6e2f1;
+    border-radius: 16px;
+    padding: 7px 16px;
+}
+
+QWidget#topBarWrap {
+    background: rgba(255, 255, 255, 0.58);
+    border: 1px solid rgba(214, 226, 241, 0.9);
+    border-radius: 20px;
+}
+
+QLabel#lblCurrentRole {
+    background: #e0ecff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    border-radius: 14px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+QLabel#lblTopbarHint {
+    background: transparent;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 0 8px;
+}
+
+QPushButton#btnNotification {
+    background: #eef5ff;
+    color: #1d4ed8;
+    border: 1px solid #d6e6ff;
+    border-radius: 14px;
+    padding: 7px 12px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+QLabel#lblCurrentUser {
+    background: rgba(255, 255, 255, 0.9);
+    color: #0f172a;
+    border: 1px solid #dbe4f0;
+    border-radius: 14px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+QPushButton {
+    background: rgba(245, 248, 253, 0.92);
+    color: #3f5574;
+    border: 1px solid #edf2f8;
+    border-radius: 16px;
+    padding: 11px 16px;
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+}
+
+QPushButton:hover {
+    background: #eef5ff;
+    color: #1d4ed8;
+    border: 1px solid #d6e6ff;
+}
+
+QPushButton:pressed {
+    background: #dbeafe;
+    color: #1e40af;
+    border: 1px solid #b8d2fb;
+}
+
+QPushButton:disabled {
+    color: #a8b4c7;
+    background: #f3f6fb;
+    border: 1px solid #e6edf5;
+}
+
+QPushButton#btntrangchu {
+    background: rgba(245, 248, 253, 0.92);
+    color: #3f5574;
+    border: 1px solid #edf2f8;
+    font-weight: 700;
+}
+
+QPushButton#btntrangchu:hover {
+    background: #eef5ff;
+    color: #1d4ed8;
+    border: 1px solid #d6e6ff;
+}
+
+QPushButton[navActive="true"] {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #2563eb, stop:1 #38bdf8);
+    color: white;
+    border: none;
+    font-weight: 700;
+}
+
+QPushButton[navActive="true"]:hover {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #1d4ed8, stop:1 #0ea5e9);
+    color: white;
+    border: none;
+}
+
+QPushButton#btnThem {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #2563eb, stop:1 #60a5fa);
+    color: white;
+    border: none;
+    font-weight: 700;
+}
+
+QPushButton#btnSua {
+    background: rgba(59, 130, 246, 0.1);
+    color: #1d4ed8;
+    border: 1px solid rgba(147, 197, 253, 0.95);
+}
+
+QPushButton#btnXoa {
+    background: rgba(239, 68, 68, 0.08);
+    color: #b91c1c;
+    border: 1px solid rgba(252, 165, 165, 0.95);
+}
+
+QPushButton#btnTimKiem {
+    background: rgba(16, 185, 129, 0.08);
+    color: #047857;
+    border: 1px solid rgba(167, 243, 208, 0.95);
+}
+
+QPushButton#btnxoaDL {
+    background: rgba(100, 116, 139, 0.08);
+    color: #475569;
+    border: 1px solid rgba(203, 213, 225, 0.95);
+}
+
+QFrame#toastCard {
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid #bfdbfe;
+    border-radius: 16px;
+}
+
+QLabel#toastTitle {
+    color: #1d4ed8;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+QLabel#toastMessage {
+    color: #334155;
+    font-size: 12px;
 }
 
 QLineEdit, QComboBox, QDateEdit, QTimeEdit, QSpinBox, QTextEdit {
-    font-size: 14px;
-    padding: 8px 12px;
-    border: 1.5px solid #4B5563;
-    border-radius: 8px;
-    background-color: #1E2538;
-    color: #FFFFFF;
+    background: #f8fbff;
+    border: 1px solid #d8e3f0;
+    border-radius: 12px;
+    padding: 9px 12px;
+    color: #122033;
+    selection-background-color: #bfdbfe;
 }
 
 QLineEdit:focus, QComboBox:focus, QDateEdit:focus, QTimeEdit:focus, QSpinBox:focus, QTextEdit:focus {
-    border: 2px solid #00E5FF;
-    background-color: #151A27;
+    border: 1.5px solid #60a5fa;
+    background: white;
 }
 
 QComboBox::drop-down, QDateEdit::drop-down, QTimeEdit::drop-down {
     border: none;
-    width: 30px;
+    width: 24px;
 }
 
-QSizeGrip {
-    width: 0px;
-    height: 0px;
+QTableWidget {
     background: transparent;
+    border: none;
+    gridline-color: #edf2f7;
+    alternate-background-color: #f8fbff;
+    outline: none;
 }
 
-/* ================================================= */
-/* 6. MENU BAR                                       */
-/* ================================================= */
+QTableWidget::item {
+    padding: 10px 8px;
+    border-bottom: 1px solid #edf2f7;
+}
+
+QTableWidget::item:selected {
+    background: #dbeafe;
+    color: #1e3a8a;
+}
+
+QHeaderView::section {
+    background: #f8fbff;
+    color: #5c6f8b;
+    border: none;
+    border-bottom: 1px solid #d8e3f0;
+    padding: 11px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+QListWidget {
+    background: transparent;
+    border: none;
+    outline: none;
+}
+
 QMenuBar {
-    background-color: #0F131D;
-    color: #94A3B8;
-    border-bottom: 1px solid #1E2538;
+    background: rgba(255, 255, 255, 0.82);
+    color: #41546f;
+    border-bottom: 1px solid #dbe4f0;
     font-size: 13px;
-    font-weight: bold;
+    font-weight: 600;
 }
 
 QMenuBar::item {
-    spacing: 3px;
-    padding: 6px 12px;
+    padding: 7px 12px;
+    border-radius: 8px;
+    margin: 3px 2px;
     background: transparent;
-    border-radius: 4px;
-    margin: 2px 0px;
 }
 
 QMenuBar::item:selected {
-    background: rgba(0, 229, 255, 0.15);
-    color: #00E5FF;
+    background: #eef4ff;
+    color: #1d4ed8;
 }
 
 QMenu {
-    background-color: #151A27;
-    color: #E2E8F0;
-    border: 1px solid #2A3143;
-    border-radius: 6px;
-    padding: 5px;
+    background: white;
+    color: #223049;
+    border: 1px solid #dbe4f0;
+    border-radius: 12px;
+    padding: 6px;
 }
 
 QMenu::item {
-    padding: 8px 30px 8px 20px;
-    border-radius: 4px;
+    padding: 8px 24px;
+    border-radius: 8px;
 }
 
 QMenu::item:selected {
-    background-color: rgba(115, 128, 232, 0.2);
-    color: #00E5FF;
-    font-weight: bold;
+    background: #edf4ff;
+    color: #1d4ed8;
 }
 
-/* ================================================= */
-/* 7. CÁC Ô THỐNG KÊ (DASHBOARD CARDS)               */
-/* ================================================= */
-QFrame#frameThongKe1, QFrame#frameThongKe2, QFrame#frameThongKe3, QFrame#frameThongKe4,
-QFrame#frame_2, QFrame#frame_3, QFrame#frame_4 {
-    background-color: #121824;
-    border: 1px solid #1E2538;
-    border-radius: 12px;
+QScrollBar:vertical {
+    width: 10px;
+    background: transparent;
+    margin: 4px 0;
 }
 
-QFrame#frameThongKe1:hover, QFrame#frameThongKe2:hover, QFrame#frameThongKe3:hover, QFrame#frameThongKe4:hover,
-QFrame#frame_2:hover, QFrame#frame_3:hover, QFrame#frame_4:hover {
-    border: 1px solid #00E5FF;
-    background-color: rgba(0, 229, 255, 0.05);
+QScrollBar::handle:vertical {
+    background: #c8d6e8;
+    border-radius: 5px;
+    min-height: 28px;
 }
 
-QLabel#lblTotalValue, QLabel#lblTongBN, QLabel#lblTongBS {
-    color: #00E5FF;
-    font-size: 28px;
-    font-weight: 900;
-}
-/* Card thiết kế cho danh sách lịch khám */
-QFrame#cardLichKham {
-    background-color: #1A202C;
-    border: 1px solid #2D3748;
-    border-radius: 8px;
+QScrollBar::handle:vertical:hover {
+    background: #aebfd8;
 }
 
-QFrame#cardLichKham:hover {
-    border: 1px solid #00E5FF;
-    background-color: #2D3748;
-}
-
-/* Đảm bảo 3 ô thống kê có cùng cỡ chữ và không bị lệch */
-QLabel#lblRevenueValue, QLabel#lblCompletedValue, QLabel#lblTotalValue {
-    font-size: 24px;
-    font-weight: 900;
-    color: #00E5FF;
-}
-
-/* Đồng bộ hóa khung chứa 3 ô thống kê */
-QFrame#frameRevenue, QFrame#frameCompleted, QFrame#frameTotal {
-    min-height: 110px;
-    max-height: 130px;
-}
-QFrame#cardLichKham {
-    background-color: #1A202C;
-    border: 1px solid #2D3748;
-    border-radius: 8px;
-}
-QFrame#cardLichKham:hover {
-    border: 1px solid #00E5FF;
-    background-color: #2D3748;
-}
-QListWidget {
-    background-color: transparent;
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical,
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    background: none;
     border: none;
-    outline: none;
+}
+
+QFrame#frameThongKe1, QFrame#frameThongKe2, QFrame#frameThongKe3, QFrame#frameThongKe4,
+QFrame#frame_2, QFrame#frame_3, QFrame#frame_4, QFrame#frameRevenue, QFrame#frameCompleted, QFrame#frameTotal {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ffffff, stop:1 #f3f8ff);
+    border: 1px solid #dbe4f0;
+    border-radius: 20px;
+}
+
+QLabel#lblRevenueValue, QLabel#lblCompletedValue, QLabel#lblTotalValue,
+QLabel#lblTongBN, QLabel#lblTongBS {
+    color: #0f172a;
+    font-size: 28px;
+    font-weight: 800;
+}
+
+QFrame#cardLichKham {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+}
+
+QFrame#cardLichKham:hover {
+    border: 1px solid #93c5fd;
+    background: #f8fbff;
+}
+
+QCalendarWidget QWidget {
+    background: white;
+    alternate-background-color: #f8fbff;
+}
+
+QCalendarWidget QToolButton {
+    color: #1d4ed8;
+    background: #f8fbff;
+    border: 1px solid #dbe4f0;
+    border-radius: 10px;
+    font-weight: 700;
+    padding: 6px 10px;
+}
+
+QCalendarWidget QMenu {
+    width: 140px;
+    left: 20px;
+}
+
+QCalendarWidget QSpinBox {
+    background: white;
+    border: 1px solid #dbe4f0;
+    border-radius: 8px;
+    padding: 4px 8px;
+    color: #0f172a;
+}
+
+QCalendarWidget QAbstractItemView:enabled {
+    color: #1e293b;
+    background: white;
+    border: 1px solid #dbe4f0;
+    border-radius: 12px;
+    selection-background-color: #bfdbfe;
+    selection-color: #1e3a8a;
+}
+
+QCalendarWidget QAbstractItemView:enabled:hover {
+    background: #f8fbff;
 }

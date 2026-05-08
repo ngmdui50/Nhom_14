@@ -6,136 +6,253 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>420</width>
-    <height>600</height>
+    <width>520</width>
+    <height>680</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Đăng nhập</string>
+   <string>Dang nhap</string>
   </property>
-
   <widget class="QWidget" name="centralwidget">
-
-   <!-- LOGO -->
-   <widget class="QLabel" name="lblLogo">
-    <property name="geometry">
-     <rect>
-      <x>150</x>
-      <y>30</y>
-      <width>120</width>
-      <height>120</height>
-     </rect>
+   <property name="styleSheet">
+    <string notr="true">QWidget#centralwidget {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #eef4ff, stop:0.5 #f8fbff, stop:1 #e6f0ff);
+}
+QFrame#loginCard {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #dbe7f4;
+    border-radius: 28px;
+}
+QLabel#labelTitle {
+    color: #0f172a;
+    font-size: 24px;
+    font-weight: 800;
+}
+QLabel#labelSubtitle {
+    color: #64748b;
+    font-size: 12px;
+}
+QLineEdit {
+    background: #f8fbff;
+    border: 1px solid #d9e5f2;
+    border-radius: 16px;
+    padding: 12px 14px;
+    font-size: 13px;
+    color: #172033;
+}
+QLineEdit:focus {
+    border: 1.5px solid #60a5fa;
+    background: white;
+}
+QPushButton {
+    border-radius: 16px;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 700;
+}
+QPushButton#btndangnhap {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #2563eb, stop:1 #38bdf8);
+    color: white;
+    border: none;
+}
+QPushButton#btnthoat {
+    background: #eef5ff;
+    color: #1d4ed8;
+    border: 1px solid #d6e6ff;
+}
+QPushButton#labelForgot {
+    background: transparent;
+    color: #2563eb;
+    border: none;
+    padding: 0;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: underline;
+}</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="leftMargin">
+     <number>32</number>
     </property>
-    <property name="pixmap">
-     <pixmap>logo.png</pixmap>
+    <property name="topMargin">
+     <number>32</number>
     </property>
-    <property name="scaledContents">
-     <bool>true</bool>
+    <property name="rightMargin">
+     <number>32</number>
     </property>
-   </widget>
-
-   <!-- TITLE -->
-   <widget class="QLabel" name="labelTitle">
-    <property name="geometry">
-     <rect>
-      <x>110</x>
-      <y>160</y>
-      <width>200</width>
-      <height>30</height>
-     </rect>
+    <property name="bottomMargin">
+     <number>32</number>
     </property>
-    <property name="text">
-     <string>Đăng Nhập Hệ Thống</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignCenter</set>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>12</pointsize>
-      <bold>true</bold>
-     </font>
-    </property>
-   </widget>
-
-   <!-- USERNAME -->
-   <widget class="QLineEdit" name="txtusername">
-    <property name="geometry">
-     <rect>
-      <x>50</x>
-      <y>220</y>
-      <width>320</width>
-      <height>40</height>
-     </rect>
-    </property>
-    <property name="placeholderText">
-     <string>Nhập tên đăng nhập...</string>
-    </property>
-   </widget>
-
-   <!-- PASSWORD -->
-   <widget class="QLineEdit" name="txtpassword">
-    <property name="geometry">
-     <rect>
-      <x>50</x>
-      <y>280</y>
-      <width>320</width>
-      <height>40</height>
-     </rect>
-    </property>
-    <property name="placeholderText">
-     <string>Nhập mật khẩu...</string>
-    </property>
-   </widget>
-
-   <!-- LOGIN BUTTON -->
-   <widget class="QPushButton" name="btndangnhap">
-    <property name="geometry">
-     <rect>
-      <x>50</x>
-      <y>350</y>
-      <width>140</width>
-      <height>45</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Đăng nhập</string>
-    </property>
-   </widget>
-
-   <!-- EXIT BUTTON -->
-   <widget class="QPushButton" name="btnthoat">
-    <property name="geometry">
-     <rect>
-      <x>230</x>
-      <y>350</y>
-      <width>140</width>
-      <height>45</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Thoát</string>
-    </property>
-   </widget>
-
-   <!-- FORGOT -->
-   <widget class="QLabel" name="labelForgot">
-    <property name="geometry">
-     <rect>
-      <x>50</x>
-      <y>410</y>
-      <width>200</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Quên mật khẩu?</string>
-    </property>
-   </widget>
-
+    <item>
+     <spacer name="verticalSpacerTop">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>24</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QFrame" name="loginCard">
+      <layout class="QVBoxLayout" name="verticalLayoutCard">
+       <property name="leftMargin">
+        <number>32</number>
+       </property>
+       <property name="topMargin">
+        <number>30</number>
+       </property>
+       <property name="rightMargin">
+        <number>32</number>
+       </property>
+       <property name="bottomMargin">
+        <number>30</number>
+       </property>
+       <property name="spacing">
+        <number>14</number>
+       </property>
+       <item alignment="Qt::AlignHCenter">
+        <widget class="QLabel" name="lblLogo">
+         <property name="minimumSize">
+          <size>
+           <width>96</width>
+           <height>96</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>96</width>
+           <height>96</height>
+          </size>
+         </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item alignment="Qt::AlignHCenter">
+        <widget class="QLabel" name="labelTitle">
+         <property name="text">
+          <string>Dang nhap he thong</string>
+         </property>
+        </widget>
+       </item>
+       <item alignment="Qt::AlignHCenter">
+        <widget class="QLabel" name="labelSubtitle">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>36</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Quan ly dat lich kham va van hanh phong kham</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="txtusername">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>48</height>
+          </size>
+         </property>
+         <property name="placeholderText">
+          <string>Nhap ten dang nhap</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="txtpassword">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>48</height>
+          </size>
+         </property>
+         <property name="placeholderText">
+          <string>Nhap mat khau</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayoutButtons">
+         <property name="spacing">
+          <number>12</number>
+         </property>
+         <item>
+          <widget class="QPushButton" name="btndangnhap">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>48</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Dang nhap</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnthoat">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>48</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Thoat</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item alignment="Qt::AlignHCenter">
+        <widget class="QPushButton" name="labelForgot">
+         <property name="text">
+          <string>Quen mat khau?</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <spacer name="verticalSpacerBottom">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>24</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
   </widget>
-
-  <widget class="QMenuBar" name="menubar"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>520</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>

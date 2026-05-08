@@ -17,25 +17,35 @@ class LichKhamController:
             r["ngay_kham"],
             r["gio_kham"],
             r["TrangThai"],
-            r["calam_id"]
+            r["calam_id"],
+            r.get("mo_ta", "")
         ) for r in rows]
 
     @staticmethod
     def insert(values):
         # Đã SỬA LỖI: Thêm đủ 8 dấu %s cho 8 trường dữ liệu tương ứng
+        if len(values) == 8:
+            values = (*values, "")
         sql = """
-            INSERT INTO LichKham (benhnhan_id, bacsi_id, phongkham_id, dichvu_id, ngay_kham, gio_kham, TrangThai, calam_id) 
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO LichKham (benhnhan_id, bacsi_id, phongkham_id, dichvu_id, ngay_kham, gio_kham, TrangThai, calam_id, mo_ta) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         return execute_query(sql, values)
 
     @staticmethod
     def update(id_val, values):
-        sql = """
-            UPDATE LichKham 
-            SET benhnhan_id=%s, bacsi_id=%s, phongkham_id=%s, dichvu_id=%s, ngay_kham=%s, gio_kham=%s, TrangThai=%s, calam_id=%s
-            WHERE id=%s
-        """
+        if len(values) == 8:
+            sql = """
+                UPDATE LichKham 
+                SET benhnhan_id=%s, bacsi_id=%s, phongkham_id=%s, dichvu_id=%s, ngay_kham=%s, gio_kham=%s, TrangThai=%s, calam_id=%s
+                WHERE id=%s
+            """
+        else:
+            sql = """
+                UPDATE LichKham 
+                SET benhnhan_id=%s, bacsi_id=%s, phongkham_id=%s, dichvu_id=%s, ngay_kham=%s, gio_kham=%s, TrangThai=%s, calam_id=%s, mo_ta=%s
+                WHERE id=%s
+            """
         return execute_query(sql, (*values, id_val))
 
     @staticmethod
@@ -50,14 +60,22 @@ class LichKhamController:
         return fetch_all(sql, (f"%{keyword}%", f"%{keyword}%"))
 
     @staticmethod
-    def update_tu_form_chi_tiet(id_val, ngay, gio, trangthai):
+    def update_tu_form_chi_tiet(id_val, ngay, gio, trangthai, mo_ta=None):
         # Hàm này thiết kế riêng cho việc sửa nhanh trên Form Timeline
+        if mo_ta is None:
+            sql = """
+                UPDATE LichKham 
+                SET ngay_kham=%s, gio_kham=%s, TrangThai=%s 
+                WHERE id=%s
+            """
+            return execute_query(sql, (ngay, gio, trangthai, id_val))
+
         sql = """
             UPDATE LichKham 
-            SET ngay_kham=%s, gio_kham=%s, TrangThai=%s 
+            SET ngay_kham=%s, gio_kham=%s, TrangThai=%s, mo_ta=%s
             WHERE id=%s
         """
-        return execute_query(sql, (ngay, gio, trangthai, id_val))
+        return execute_query(sql, (ngay, gio, trangthai, mo_ta, id_val))
 
     # ================= CÁC HÀM GỢI Ý THÔNG MINH =================
     
@@ -74,7 +92,12 @@ class LichKhamController:
     @staticmethod
     def get_bacsi_theo_loc(chuyen_khoa, calam_id):
         # Lọc bác sĩ theo chuyên khoa của dịch vụ VÀ ca làm việc
-        sql = "SELECT id, ten FROM BacSi_Moi WHERE chuyen_khoa = %s AND calam_id = %s"
+        sql = """
+            SELECT bs.id, bs.ten
+            FROM BacSi_Moi bs
+            JOIN BacSi_CaLam bcl ON bcl.bacsi_id = bs.id
+            WHERE bs.chuyen_khoa = %s AND bcl.calam_id = %s
+        """
         return fetch_all(sql, (chuyen_khoa, calam_id))
 
     @staticmethod
