@@ -99,6 +99,9 @@ QPushButton#labelForgot {
     <item>
      <widget class="QFrame" name="loginCard">
       <layout class="QVBoxLayout" name="verticalLayoutCard">
+       <property name="spacing">
+        <number>14</number>
+       </property>
        <property name="leftMargin">
         <number>32</number>
        </property>
@@ -110,9 +113,6 @@ QPushButton#labelForgot {
        </property>
        <property name="bottomMargin">
         <number>30</number>
-       </property>
-       <property name="spacing">
-        <number>14</number>
        </property>
        <item alignment="Qt::AlignHCenter">
         <widget class="QLabel" name="lblLogo">
@@ -136,7 +136,7 @@ QPushButton#labelForgot {
        <item alignment="Qt::AlignHCenter">
         <widget class="QLabel" name="labelTitle">
          <property name="text">
-          <string>Dang nhap he thong</string>
+          <string>Đăng nhập hệ thống</string>
          </property>
         </widget>
        </item>
@@ -149,13 +149,13 @@ QPushButton#labelForgot {
           </size>
          </property>
          <property name="text">
-          <string>Quan ly dat lich kham va van hanh phong kham</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
+          <string>Quản lý đặt lịch khám bệnh </string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -199,7 +199,7 @@ QPushButton#labelForgot {
             </size>
            </property>
            <property name="text">
-            <string>Dang nhap</string>
+            <string>Đăng nhập</string>
            </property>
           </widget>
          </item>
@@ -212,7 +212,7 @@ QPushButton#labelForgot {
             </size>
            </property>
            <property name="text">
-            <string>Thoat</string>
+            <string>Thoát</string>
            </property>
           </widget>
          </item>
@@ -221,7 +221,7 @@ QPushButton#labelForgot {
        <item alignment="Qt::AlignHCenter">
         <widget class="QPushButton" name="labelForgot">
          <property name="text">
-          <string>Quen mat khau?</string>
+          <string>Quên mật khẩu?</string>
          </property>
         </widget>
        </item>

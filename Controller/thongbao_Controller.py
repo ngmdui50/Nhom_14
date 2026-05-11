@@ -54,6 +54,19 @@ class ThongBaoController:
         )
 
     @staticmethod
+    def get_theo_tai_khoan(taikhoan_id):
+        ThongBaoController.ensure_table()
+        return fetch_all(
+            """
+            SELECT id, tieu_de, noi_dung, loai, da_doc, created_at
+            FROM ThongBao
+            WHERE taikhoan_id = ?
+            ORDER BY id DESC
+            """,
+            (taikhoan_id,),
+        )
+
+    @staticmethod
     def mark_as_read(thongbao_id):
         ThongBaoController.ensure_table()
         return ThongBaoController._execute_non_strict(

@@ -9,7 +9,7 @@ from PyQt6.QtWidgets import (
     QVBoxLayout, QTableWidgetItem, QHeaderView, QAbstractItemView, QLineEdit,
     QListWidget, QListWidgetItem, QHBoxLayout, QLabel, QPushButton, QComboBox, QTableWidget,
     QWidget, QFrame, QSizePolicy, QTextEdit, QFileDialog,
-    QCompleter
+    QCompleter, QGridLayout, QGroupBox
 )
 # main.py
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QMessageBox, QTableWidgetItem, QHeaderView,
@@ -69,300 +69,43 @@ try:
     from Controller.hoadon_Controller import HoaDonController
     from Controller.thongke_Controller import ThongKeController
     from Controller.thongbao_Controller import ThongBaoController
+    from Controller.auth_module import authenticate, reset_password_via_identity
+    from Controller.notification_module import (
+        create_new_schedule_notification,
+        get_unread_notifications,
+        mark_all_notifications_read,
+        mark_notification_read,
+    )
+    from Controller.bacsi_schedule_controller import BacSiScheduleController
+    from Controller.account_module import create_account, update_account, change_profile_password
+    from Controller.patient_module import validate_patient_input, update_patient
+    from Controller.ui_shell_module import (
+        extend_patient_form,
+        rebuild_sidebar as ui_rebuild_sidebar,
+        rebuild_topbar as ui_rebuild_topbar,
+        update_action_button_state,
+        update_sidebar_active as ui_update_sidebar_active,
+    )
+    from Controller.dashboard_module import (
+        cap_nhat_dashboard_theo_quyen as dashboard_cap_nhat_theo_quyen,
+        cap_nhat_danh_dau_calendar as dashboard_mark_calendar,
+        cap_nhat_lich_kham_hom_nay as dashboard_cap_nhat_lich_hom_nay,
+        fill_table as dashboard_fill_table,
+        hien_thi_timeline as dashboard_hien_thi_timeline,
+        load_data_doanhthu as dashboard_load_doanhthu,
+        load_data_taikhoan as dashboard_load_taikhoan,
+        load_thong_ke_doanh_thu as dashboard_load_thong_ke_doanh_thu,
+        mo_tab as dashboard_mo_tab,
+        on_calendar_date_changed as dashboard_on_calendar_date_changed,
+        show_thongke as dashboard_show_thongke,
+        update_time as dashboard_update_time,
+        dong_bo_hoa_don_theo_trang_thai as dashboard_dong_bo_hoa_don,
+    )
 except ImportError:
     sys.path.append(os.path.dirname(os.path.abspath(__file__)))
     from Helper.TimelineHelper import TimelineDrawer
 
-# ================= LOGIN WINDOW =================
-class LoginApp(QMainWindow):
-    login_successful = pyqtSignal(object)
-
-    def __init__(self):
-        super().__init__()
-        try:
-            uic.loadUi("View/dangnhap.ui", self)
-            self.setFixedSize(self.size())
-            self.txtpassword.setEchoMode(QLineEdit.EchoMode.Password)
-            self.btndangnhap.clicked.connect(self.check_login)
-            self.btnthoat.clicked.connect(self.close)
-            logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logo.png")
-            if hasattr(self, "lblLogo") and os.path.exists(logo_path):
-                self.lblLogo.setPixmap(QPixmap(logo_path))
-            if hasattr(self, "labelForgot"):
-                self.labelForgot.clicked.connect(self.quen_mat_khau)
-            self.txtusername.setFocus()
-        except Exception as e:
-            print(f"Lỗi load form Đăng nhập: {e}")
-
-    def quen_mat_khau(self):
-        username, ok = QInputDialog.getText(self, "Quen mat khau", "Nhap username:")
-        if not ok or not username.strip():
-            return
-        ho_ten, ok = QInputDialog.getText(self, "Xac minh", "Nhap ho ten dung voi tai khoan:")
-        if not ok or not ho_ten.strip():
-            return
-        new_password, ok = QInputDialog.getText(self, "Dat mat khau moi", "Nhap mat khau moi:")
-        if not ok or not new_password.strip():
-            return
-        confirm_password, ok = QInputDialog.getText(self, "Xac nhan", "Nhap lai mat khau moi:")
-        if not ok or not confirm_password.strip():
-            return
-        if new_password != confirm_password:
-            QMessageBox.warning(self, "Thong bao", "Xac nhan mat khau khong khop.")
-            return
-        try:
-            TaiKhoanController.reset_password_by_identity(username.strip(), ho_ten.strip(), new_password.strip())
-            QMessageBox.information(self, "Thanh cong", "Da dat lai mat khau. Hay dang nhap lai.")
-        except ValueError as ve:
-            QMessageBox.warning(self, "Thong bao", str(ve))
-        except Exception as e:
-            QMessageBox.critical(self, "Loi", str(e))
-
-    def check_login(self):
-        username = self.txtusername.text().strip()
-        password = self.txtpassword.text().strip()
-        user = next(
-            (
-                tk for tk in TaiKhoanController.get_all()
-                if tk.username == username and tk.password == password
-            ),
-            None
-        )
-        if not user:
-            QMessageBox.warning(self, "Lỗi đăng nhập", "Tên đăng nhập hoặc mật khẩu không đúng!")
-            return
-        self.login_successful.emit(user)
-        self.close()
-class DialogChiTietLichKham(QDialog):
-    def __init__(self, parent=None, lich_id=None):
-        super().__init__(parent)
-        self.main_app = parent # Tham chiếu đến MainApp
-        self.lich_id = lich_id
-        self.is_edit_mode = False
-        self.init_ui()
-
-    def init_ui(self):
-        # 1. Load file UI
-        loadUi("View/FormChiTietLichKham.ui", self)
-        
-        # 2. Khởi tạo dữ liệu trạng thái cho ComboBox (Cột trang_thai)
-        self.cbtrang_thai.clear()
-        self.cbtrang_thai.addItems(["Chờ Khám", "Đang Khám", "Đã Xong", "Hủy Lịch"])
-        
-        # 3. Kết nối sự kiện nút bấm
-        self.btnEdit.clicked.connect(self.bat_che_do_sua)
-        self.btnSave.clicked.connect(self.luu_thong_tin_sua)
-        self.btnClose.clicked.connect(self.close)
-        
-        # 4. Load dữ liệu
-        self.load_data()
-        self.set_che_do_chiren(True) # Mặc định chỉ đọc
-
-    def load_data(self):
-        if not self.lich_id: return
-        
-        def val(item, *keys):
-            if isinstance(item, dict):
-                for k in keys:
-                    if k in item and item[k] is not None: return item[k]
-            else:
-                for k in keys:
-                    if hasattr(item, k) and getattr(item, k) is not None: return getattr(item, k)
-            return ""
-
-        try:
-            # 1. Lấy dữ liệu Lịch khám
-            lk_data = LichKhamController.get_all()
-            
-            l = None
-            for x in lk_data:
-                # Dùng hàm val() để lấy ID an toàn
-                x_id = str(val(x, 'id', 'ID')).strip()
-                if x_id == str(self.lich_id).strip():
-                    l = x
-                    break
-                    
-            if not l: 
-                raise Exception(f"Không tìm thấy lịch khám có ID là '{self.lich_id}'")
-            self.lich_hien_tai = l
-
-            # 2. Tạo từ điển map ID -> Tên
-            # Hàm val() sẽ tự dò tìm nếu bạn đặt tên biến là ho_ten, ten, hay ten_benh_nhan...
-            dict_bn = {str(val(bn, 'id', 'ID')): str(val(bn, 'ho_ten', 'ten', 'ten_benh_nhan')) for bn in BenhNhanController.get_all()}
-            dict_bs = {str(val(bs, 'id', 'ID')): str(val(bs, 'ho_ten', 'ten', 'ten_bac_si')) for bs in BacSiController.get_all()}
-            dict_dv = {str(val(dv, 'id', 'ID')): str(val(dv, 'ten_dich_vu', 'ten_dv', 'ten')) for dv in DichVuController.get_all()}
-
-            # 3. Đổ dữ liệu lên giao diện
-            self.txtid.setText(str(val(l, 'id', 'ID')))
-            self.txtbenhnhan.setText(dict_bn.get(str(val(l, 'benh_nhan_id', 'benhnhan_id')), "Không rõ"))
-            self.txtbacsi.setText(dict_bs.get(str(val(l, 'bac_si_id', 'bacsi_id')), "Không rõ"))
-            self.txtdichvu.setText(dict_dv.get(str(val(l, 'dich_vu_id', 'dichvu_id')), "Không rõ"))
-            
-            # Xử lý Ngày
-            ngay_str = str(val(l, 'ngay_kham'))
-            q_date = QDate.fromString(ngay_str, "yyyy-MM-dd") 
-            if not q_date.isValid():
-                q_date = QDate.fromString(ngay_str, "dd/MM/yyyy") 
-            if q_date.isValid():
-                self.datekham.setDate(q_date)
-
-            # Xử lý Giờ (Cắt phần giây đi nếu CSDL lưu là 08:30:00)
-            gio_str = str(val(l, 'gio_kham'))
-            if len(gio_str) > 5:
-                gio_str = gio_str[:5] 
-                
-            q_time = QTime.fromString(gio_str, "HH:mm")
-            if q_time.isValid():
-                self.timekham.setTime(q_time)
-            
-            # Xử lý Trạng thái (ComboBox)
-            trang_thai = str(val(l, 'trang_thai', 'TrangThai', 'trangthai'))
-            index = self.cbtrang_thai.findText(trang_thai)
-            if index >= 0:
-                self.cbtrang_thai.setCurrentIndex(index)
-            
-            
-        except NameError as ne:
-            QMessageBox.critical(self, "Thiếu Controller", f"Bạn chưa Import Controller: {str(ne)}")
-            self.close()
-        except Exception as e:
-            QMessageBox.critical(self, "Lỗi lấy dữ liệu", f"Chi tiết lỗi: {str(e)}")
-            self.close()  
-    def set_che_do_chiren(self, is_read_only):
-        # Các trường chỉ đọc cố định
-        self.txtid.setReadOnly(True)
-        self.txtbenhnhan.setReadOnly(True)
-        
-        # Các trường có thể sửa khi is_read_only = False
-        self.txtbacsi.setReadOnly(is_read_only)
-        self.txtdichvu.setReadOnly(is_read_only)
-        self.datekham.setReadOnly(is_read_only)
-        self.timekham.setReadOnly(is_read_only)
-        
-        # ComboBox không có read-only, dùng setEnabled
-        self.cbtrang_thai.setEnabled(not is_read_only) 
-        
-        # Quản lý nút
-        self.btnEdit.setVisible(is_read_only)
-        self.btnSave.setVisible(not is_read_only)
-        self.btnClose.setVisible(is_read_only) # Hiện nút đóng khi chỉ xem
-
-    def bat_che_do_sua(self):
-        self.is_edit_mode = True
-        self.set_che_do_chiren(False)
-        self.btnEdit.setVisible(False)
-        self.btnSave.setVisible(True)
-
-    def luu_thong_tin_sua(self):
-        try:
-            # 1. Lấy dữ liệu mới từ Form (Bỏ qua ghi chú vì DB không có cột này)
-            ngay_new = self.datekham.date().toString("yyyy-MM-dd")
-            gio_new = self.timekham.time().toString("HH:mm")
-            tt_new = self.cbtrang_thai.currentText()
-            tt_old = str(getattr(self.lich_hien_tai, "trang_thai", getattr(self.lich_hien_tai, "TrangThai", "")))
-            mo_ta_new = None
-            if tt_new != tt_old:
-                mo_ta_new, ok = QInputDialog.getMultiLineText(
-                    self,
-                    "Mô tả chuyển trạng thái",
-                    f"Nhập mô tả/lý do chuyển trạng thái từ '{tt_old}' sang '{tt_new}':",
-                    str(getattr(self.lich_hien_tai, "mo_ta", "") or "")
-                )
-                if not ok:
-                    return
-
-            # 2. Hỏi xác nhận
-            xac_nhan = QMessageBox.question(
-                None, "Xác nhận", "Bạn có chắc chắn muốn lưu thông tin đã sửa?", 
-                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
-            )
-            
-            if xac_nhan == QMessageBox.StandardButton.Yes:
-                # 💎 3. Gọi đúng hàm update dành riêng cho Form Chi Tiết
-                LichKhamController.update_tu_form_chi_tiet(self.lich_id, ngay_new, gio_new, tt_new, mo_ta_new)
-                
-                QMessageBox.information(None, "Thành công", "Đã cập nhật thông tin lịch khám thành công!")
-                
-                # 4. Vẽ lại Timeline ở MainApp để cập nhật ngay lập tức
-                if hasattr(self, 'main_app') and self.main_app:
-                    self.main_app.dong_bo_hoa_don_theo_trang_thai(self.lich_id, tt_new, ngay_new)
-                    self.main_app.hien_thi_timeline() 
-                    
-                self.close()
-
-        except NameError as ne:
-             QMessageBox.critical(None, "Lỗi Import", f"Chưa nhận diện được Controller. Lỗi: {str(ne)}")
-        except Exception as e:
-            QMessageBox.critical(None, "Lỗi khi lưu", f"Có lỗi xảy ra: {str(e)}") 
-# --- LỚP ĐIỀU KHIỂN FORM THÊM BỆNH NHÂN RIÊNG ---
-class ThemBenhNhanWindow(QDialog):
-    def __init__(self, parent_main):
-        super().__init__(parent_main)
-        try:
-            ui_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "View", "FormThemBenhNhan.ui")
-            uic.loadUi(ui_path, self)
-            self.parent_main = parent_main
-            self.btnLuuBN.clicked.connect(self.xu_ly_luu)
-        except Exception as e:
-            print(f"Không thể load file FormThemBenhNhan.ui: {e}")
-
-    def xu_ly_luu(self):
-        ten = self.txtTenBN.text().strip()
-        if not ten:
-            QMessageBox.warning(self, "Lỗi", "Vui lòng nhập tên bệnh nhân!")
-            return
-
-        # Lấy dữ liệu từ các ô nhập
-        gioi_tinh = self.cboGioiTinh.currentText()
-        ngay_sinh = self.txtNgaySinh.text().strip()
-        sdt = self.txtSDT.text().strip()
-        dia_chi = self.txtDiaChi.text().strip()
-
-        try:
-            from Controller.benhnhan_Controller import BenhNhanController
-            
-            # SỬA TẠI ĐÂY: Truyền đúng thứ tự và truyền rời từng biến (không dùng ngoặc tròn bao quanh data)
-            BenhNhanController.insert(ten, sdt, dia_chi, gioi_tinh, ngay_sinh)
-            
-            QMessageBox.information(self, "Thành công", f"Đã thêm bệnh nhân: {ten}")
-            
-            # Cập nhật lại danh sách ở màn hình chính
-            if hasattr(self.parent_main, 'load_data_benhnhan'):
-                self.parent_main.load_data_benhnhan()
-            if hasattr(self.parent_main, 'setup_goi_y_lich_kham'):
-                self.parent_main.setup_goi_y_lich_kham()
-            
-            self.accept() # Đóng form
-        except Exception as e:
-            QMessageBox.critical(self, "Lỗi", f"Không thể lưu: {e}")
-             
-class ToastNotification(QDialog):
-    def __init__(self, title, message, parent=None):
-        super().__init__(parent)
-        self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Tool)
-        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
-        self.resize(320, 96)
-
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-
-        card = QFrame(self)
-        card.setObjectName("toastCard")
-        card_layout = QVBoxLayout(card)
-        card_layout.setContentsMargins(14, 12, 14, 12)
-        card_layout.setSpacing(4)
-
-        lbl_title = QLabel(title, card)
-        lbl_title.setObjectName("toastTitle")
-        lbl_msg = QLabel(message, card)
-        lbl_msg.setObjectName("toastMessage")
-        lbl_msg.setWordWrap(True)
-
-        card_layout.addWidget(lbl_title)
-        card_layout.addWidget(lbl_msg)
-        layout.addWidget(card)
-
-        QTimer.singleShot(4200, self.close)
+from View.dialog_windows import LoginApp, DialogChiTietLichKham, ThemBenhNhanWindow, ToastNotification
 
 class MainApp(QMainWindow):
     def __init__(self, current_user=None):
@@ -397,19 +140,8 @@ class MainApp(QMainWindow):
         self.setup_goi_y_lich_kham()
         self.setup_bo_loc_lich_kham()
         self.setup_lich_su_benh_nhan()
+        self.setup_lich_tuan_bac_si_ui()
         self.ap_dung_phan_quyen()
-
-    def chuan_hoa_quyen(self, quyen):
-        text = str(quyen or "").strip().lower()
-        if any(x in text for x in ("admin", "giám đốc", "giam doc", "quản trị", "quan tri")):
-            return "admin"
-        if any(x in text for x in ("quản lý", "quan ly")):
-            return "quan_ly"
-        if any(x in text for x in ("kế toán", "ke toan")):
-            return "ke_toan"
-        if any(x in text for x in ("bác sĩ", "bac si")):
-            return "bac_si"
-        return text or "khach"
 
     def tao_ma_tran_phan_quyen(self):
         return {
@@ -496,6 +228,106 @@ class MainApp(QMainWindow):
                 execute_query(f"ALTER TABLE BenhNhan ADD COLUMN {col} TEXT")
             except Exception:
                 pass
+        try:
+            BacSiController.ensure_weekly_schedule_table()
+        except Exception:
+            pass
+
+    def setup_lich_tuan_bac_si_ui(self):
+        if "BS" not in self.forms:
+            return
+        f = self.forms["BS"]
+        if hasattr(f, "lblCaLamBS"):
+            f.lblCaLamBS.hide()
+        if hasattr(f, "cboCaLamBS"):
+            f.cboCaLamBS.hide()
+        if hasattr(f, "scheduleComboMap"):
+            return
+
+        weekdays = [
+            ("T2", 0),
+            ("T3", 1),
+            ("T4", 2),
+            ("T5", 3),
+            ("T6", 4),
+            ("T7", 5),
+            ("CN", 6),
+        ]
+        ca_data = [(str(ca.id), str(ca.ten_ca)) for ca in CaLamController.get_all()]
+        combo_map = {}
+        grid = f.groupEdit.layout()
+        schedule_box = QGroupBox("Lịch tuần")
+        schedule_box.setObjectName("doctorScheduleBox")
+        schedule_layout = QGridLayout(schedule_box)
+        schedule_layout.setContentsMargins(12, 18, 12, 12)
+        schedule_layout.setHorizontalSpacing(12)
+        schedule_layout.setVerticalSpacing(12)
+        for offset, (label_text, thu_idx) in enumerate(weekdays):
+            cell = QWidget(schedule_box)
+            cell.setObjectName("doctorScheduleCell")
+            cell_layout = QVBoxLayout(cell)
+            cell_layout.setContentsMargins(0, 0, 0, 0)
+            cell_layout.setSpacing(6)
+
+            lbl = QLabel(label_text, cell)
+            lbl.setObjectName("doctorScheduleDay")
+            cbo = QComboBox(cell)
+            cbo.setObjectName("doctorScheduleCombo")
+            cbo.addItem("-- Nghi --", None)
+            for ca_id, ten_ca in ca_data:
+                cbo.addItem(f"{ca_id} - {ten_ca}", int(ca_id))
+            cell_layout.addWidget(lbl)
+            cell_layout.addWidget(cbo)
+            if offset < 4:
+                row = 0
+                col = offset
+            else:
+                row = 1
+                col = offset - 4
+            schedule_layout.addWidget(cell, row, col)
+            combo_map[thu_idx] = cbo
+        grid.addWidget(schedule_box, 4, 0, 1, 3)
+        f.scheduleComboMap = combo_map
+        f.scheduleBox = schedule_box
+        if hasattr(f, "groupEdit"):
+            f.groupEdit.setMaximumHeight(390)
+
+    def refresh_lich_tuan_bac_si_ui(self):
+        if "BS" not in self.forms:
+            return
+        self.setup_lich_tuan_bac_si_ui()
+        f = self.forms["BS"]
+        for thu_idx, cbo in getattr(f, "scheduleComboMap", {}).items():
+            current = cbo.currentData()
+            cbo.blockSignals(True)
+            cbo.clear()
+            cbo.addItem("-- Nghi --", None)
+            for ca in CaLamController.get_all():
+                cbo.addItem(f"{ca.id} - {ca.ten_ca}", int(ca.id))
+            idx = cbo.findData(current)
+            cbo.setCurrentIndex(idx if idx >= 0 else 0)
+            cbo.blockSignals(False)
+
+    def lay_lich_tuan_tu_form_bac_si(self):
+        f = self.forms["BS"]
+        self.setup_lich_tuan_bac_si_ui()
+        schedule_map = {}
+        for thu_idx, cbo in getattr(f, "scheduleComboMap", {}).items():
+            ca_id = cbo.currentData()
+            if ca_id not in (None, ""):
+                schedule_map[int(thu_idx)] = int(ca_id)
+        return schedule_map
+
+    def do_lich_tuan_bac_si_len_form(self, bacsi_id):
+        f = self.forms["BS"]
+        self.setup_lich_tuan_bac_si_ui()
+        schedule_map = BacSiController.get_schedule_map(bacsi_id)
+        legacy_ids = BacSiController.get_legacy_ca_ids(bacsi_id)
+        if not schedule_map and len(legacy_ids) == 1:
+            schedule_map = {thu: legacy_ids[0] for thu in range(7)}
+        for thu_idx, cbo in getattr(f, "scheduleComboMap", {}).items():
+            idx = cbo.findData(schedule_map.get(thu_idx))
+            cbo.setCurrentIndex(idx if idx >= 0 else 0)
 
     def lay_quyen_form(self, form_key):
         return self.lay_quyen_vai_tro().get("actions", {}).get(form_key, set())
@@ -755,15 +587,29 @@ class MainApp(QMainWindow):
     def mo_danh_sach_thong_bao(self):
         if not self.current_user:
             return
-        rows = ThongBaoController.get_chua_doc(getattr(self.current_user, "id", None))
+        rows = ThongBaoController.get_theo_tai_khoan(getattr(self.current_user, "id", None))
         dialog = QDialog(self)
+        dialog.setObjectName("notificationDialog")
         dialog.setWindowTitle("Thong bao")
         dialog.resize(520, 360)
         layout = QVBoxLayout(dialog)
         list_widget = QListWidget(dialog)
-        for tb in rows:
-            item = QListWidgetItem(f"{tb.get('tieu_de', '')}\n{tb.get('noi_dung', '')}")
-            list_widget.addItem(item)
+        list_widget.setObjectName("notificationList")
+        if not rows:
+            list_widget.addItem(QListWidgetItem("Chua co thong bao nao."))
+        else:
+            for tb in rows:
+                trang_thai = "Chua doc" if int(tb.get("da_doc", 0) or 0) == 0 else "Da doc"
+                thoi_gian = str(tb.get("created_at", "") or "").strip()
+                noi_dung = str(tb.get("noi_dung", "") or "").strip()
+                tieu_de = str(tb.get("tieu_de", "") or "Thong bao").strip()
+                text = f"[{trang_thai}] {tieu_de}"
+                if thoi_gian:
+                    text += f"\n{thoi_gian}"
+                if noi_dung:
+                    text += f"\n{noi_dung}"
+                item = QListWidgetItem(text)
+                list_widget.addItem(item)
         layout.addWidget(list_widget)
         ThongBaoController.mark_all_as_read(getattr(self.current_user, "id", None))
         self.cap_nhat_badge_thong_bao()
@@ -792,6 +638,21 @@ class MainApp(QMainWindow):
         tieu_de = "Ban co lich kham moi"
         noi_dung = f"Benh nhan {ten_bn} duoc dat lich vao {gio_kham} ngay {ngay_kham}."
         ThongBaoController.insert(getattr(tai_khoan_bs, "id", None), tieu_de, noi_dung)
+
+    def gui_thong_bao_cho_admin(self, hanh_dong, doi_tuong, mo_ta=""):
+        if not self.current_user:
+            return
+        nguoi_thuc_hien = str(getattr(self.current_user, "ho_ten", "") or getattr(self.current_user, "username", "") or "Nguoi dung")
+        vai_tro = self.dinh_dang_ten_vai_tro()
+        tieu_de = f"{hanh_dong} {doi_tuong}"
+        noi_dung = f"{nguoi_thuc_hien} ({vai_tro}) vua {hanh_dong.lower()} {doi_tuong.lower()}."
+        if mo_ta:
+            noi_dung += f" {mo_ta}"
+        for tk in TaiKhoanController.get_all():
+            if self.chuan_hoa_quyen(getattr(tk, "quyen", "")) == "admin":
+                if getattr(tk, "id", None) is None:
+                    continue
+                ThongBaoController.insert(getattr(tk, "id", None), tieu_de, noi_dung, "quan_tri")
 
     def hien_popup_thong_bao(self, thong_bao):
         toast = ToastNotification(
@@ -827,104 +688,10 @@ class MainApp(QMainWindow):
         self.hien_thi_timeline()
 
     def cap_nhat_danh_dau_calendar(self):
-        if not hasattr(self.formChucNang, "calendarWidget"):
-            return
-        calendar = self.formChucNang.calendarWidget
-        dates = set()
-        for lk in self.loc_lich_kham_theo_quyen(LichKhamController.get_all()):
-            text = str(getattr(lk, "ngay_kham", "")).strip()
-            for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%d-%m-%Y", "%Y/%m/%d"):
-                try:
-                    dates.add(datetime.strptime(text, fmt).strftime("%Y-%m-%d"))
-                    break
-                except ValueError:
-                    continue
-        from PyQt6.QtGui import QTextCharFormat
-        fmt = QTextCharFormat()
-        fmt.setBackground(QBrush(QColor("#dbeafe")))
-        fmt.setForeground(QColor("#1d4ed8"))
-        for date_text in dates:
-            qdate = QDate.fromString(date_text, "yyyy-MM-dd")
-            if qdate.isValid():
-                calendar.setDateTextFormat(qdate, fmt)
+        dashboard_mark_calendar(self)
 
     def rebuild_sidebar(self):
-        for child in self.frame.findChildren(QWidget):
-            if child is self.frame:
-                continue
-            if child in {
-                self.btntrangchu, self.btnBacSi, self.btnBenhNhan, self.btnLichKham,
-                self.btnDichVu, self.btnPhongKham, self.btnDoanhThu, self.btnCaLam,
-                self.btnSua, self.btnXoa, self.btnTimKiem, self.btnThem, self.btnxoaDL
-            }:
-                continue
-            child.hide()
-
-        old_layout = self.frame.layout()
-        if old_layout:
-            while old_layout.count():
-                item = old_layout.takeAt(0)
-                widget = item.widget()
-                child_layout = item.layout()
-                if widget:
-                    widget.setParent(None)
-                elif child_layout:
-                    while child_layout.count():
-                        child_item = child_layout.takeAt(0)
-                        child_widget = child_item.widget()
-                        if child_widget:
-                            child_widget.setParent(None)
-            old_layout.deleteLater()
-
-        main_layout = QVBoxLayout(self.frame)
-        main_layout.setContentsMargins(14, 14, 14, 14)
-        main_layout.setSpacing(16)
-
-        nav_card = QFrame(self.frame)
-        nav_card.setObjectName("sidebarNavCard")
-        nav_layout = QVBoxLayout(nav_card)
-        nav_layout.setContentsMargins(12, 8, 12, 20)
-        nav_layout.setSpacing(12)
-
-        nav_title = QLabel("Dieu huong", nav_card)
-        nav_title.setObjectName("sidebarSectionTitle")
-        nav_layout.addWidget(nav_title)
-
-        for btn in (
-            self.btntrangchu,
-            self.btnBacSi,
-            self.btnBenhNhan,
-            self.btnLichKham,
-            self.btnDichVu,
-            self.btnPhongKham,
-            self.btnDoanhThu,
-            self.btnCaLam,
-        ):
-            btn.setParent(nav_card)
-            btn.setMinimumHeight(46)
-            nav_layout.addWidget(btn)
-
-        nav_layout.addStretch(1)
-
-        action_card = QFrame(self.frame)
-        action_card.setObjectName("sidebarActionCard")
-        action_layout = QVBoxLayout(action_card)
-        action_layout.setContentsMargins(12, 12, 12, 18)
-        action_layout.setSpacing(12)
-
-        action_title = QLabel("Thao tac", action_card)
-        action_title.setObjectName("sidebarSectionTitle")
-        action_layout.addWidget(action_title)
-
-        for btn in (self.btnSua, self.btnXoa, self.btnTimKiem, self.btnThem, self.btnxoaDL):
-            btn.setParent(action_card)
-            btn.setMinimumHeight(40)
-            action_layout.addWidget(btn)
-
-        action_layout.addStretch(1)
-
-        main_layout.addWidget(nav_card, 4)
-        main_layout.addWidget(action_card, 2)
+        ui_rebuild_sidebar(self)
 
     def rebuild_topbar(self):
         self.lblTime.setParent(self.centralwidget)
@@ -985,35 +752,7 @@ class MainApp(QMainWindow):
         topbar_layout.addWidget(self.lblTime)
 
     def mo_rong_form_benh_nhan(self):
-        bn_ui = self.forms["BN"]
-        if hasattr(bn_ui, "txtTienSuBenh"):
-            return
-
-        bn_ui.groupEdit.setMaximumHeight(520)
-        layout = bn_ui.groupEdit.layout()
-        row = layout.rowCount() if hasattr(layout, "rowCount") else 4
-
-        lbl_tiensu = QLabel("Tien su benh")
-        bn_ui.txtTienSuBenh = QTextEdit()
-        bn_ui.txtTienSuBenh.setObjectName("txtTienSuBenh")
-        bn_ui.txtTienSuBenh.setMinimumHeight(70)
-
-        lbl_diung = QLabel("Di ung")
-        bn_ui.txtDiUng = QTextEdit()
-        bn_ui.txtDiUng.setObjectName("txtDiUng")
-        bn_ui.txtDiUng.setMinimumHeight(60)
-
-        lbl_ghichu = QLabel("Ghi chu y khoa")
-        bn_ui.txtGhiChuYKhoa = QTextEdit()
-        bn_ui.txtGhiChuYKhoa.setObjectName("txtGhiChuYKhoa")
-        bn_ui.txtGhiChuYKhoa.setMinimumHeight(70)
-
-        layout.addWidget(lbl_tiensu, row, 0)
-        layout.addWidget(bn_ui.txtTienSuBenh, row + 1, 0, 1, 3)
-        layout.addWidget(lbl_diung, row + 2, 0)
-        layout.addWidget(bn_ui.txtDiUng, row + 3, 0, 1, 3)
-        layout.addWidget(lbl_ghichu, row + 4, 0)
-        layout.addWidget(bn_ui.txtGhiChuYKhoa, row + 5, 0, 1, 3)
+        extend_patient_form(self)
         
     def apply_style(self):
         try:
@@ -1056,6 +795,14 @@ class MainApp(QMainWindow):
         for form in self.forms.values():
             self.formChucNang.stackedWidgetMain.addWidget(form)
         self.mo_rong_form_benh_nhan()
+
+        if hasattr(self.forms["LK"], "lblBenhNhanLich"):
+            self.forms["LK"].lblBenhNhanLich.setText("ID Bệnh Nhân")
+        for lbl in self.forms["LK"].findChildren(QLabel, "label"):
+            text = lbl.text().strip().lower()
+            if "bệnh nhân" in text or "benh nhan" in text:
+                lbl.setText("ID Bệnh Nhân")
+
         self.khoi_tao_form_profile()
 
     def connect_events(self):
@@ -1283,7 +1030,7 @@ class MainApp(QMainWindow):
         # 1. Gợi ý Bệnh nhân
         lk_ui.cboBN_Lich.blockSignals(True)
         lk_ui.cboBN_Lich.clear()
-        lk_ui.cboBN_Lich.addItem("-- Chon Benh Nhan --", None)
+        lk_ui.cboBN_Lich.addItem("-- Nhap/Tìm ID Benh Nhan --", None)
         lk_ui.cboBN_Lich.addItem("[+] Thêm Bệnh Nhân Mới...", "NEW")
         try:
             for bn in BenhNhanController.get_all():
@@ -1294,7 +1041,7 @@ class MainApp(QMainWindow):
         lk_ui.cboBN_Lich.setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
         lk_ui.cboBN_Lich.setMaxVisibleItems(15)
         if lk_ui.cboBN_Lich.lineEdit():
-            lk_ui.cboBN_Lich.lineEdit().setPlaceholderText("Gõ ID hoặc tên bệnh nhân...")
+            lk_ui.cboBN_Lich.lineEdit().setPlaceholderText("Nhap hoac tim ID benh nhan...")
             lk_ui.cboBN_Lich.lineEdit().setClearButtonEnabled(True)
             try: lk_ui.cboBN_Lich.lineEdit().returnPressed.disconnect()
             except: pass
@@ -1363,7 +1110,7 @@ class MainApp(QMainWindow):
         combo_bn = self.forms["LK"].cboBN_Lich
         keyword = combo_bn.currentText().strip().lower()
         if not keyword:
-            return
+            return None
 
         for i in range(combo_bn.count()):
             data = combo_bn.itemData(i)
@@ -1372,7 +1119,8 @@ class MainApp(QMainWindow):
                 continue
             if str(data).lower() == keyword or text.startswith(f"{keyword} -") or keyword in text:
                 combo_bn.setCurrentIndex(i)
-                return
+                return combo_bn.itemData(i)
+        return None
 
     def lay_lich_kham_theo_id(self, lichkham_id):
         for lich in LichKhamController.get_all():
@@ -1397,6 +1145,7 @@ class MainApp(QMainWindow):
 
     def loc_bac_si_thong_minh(self, *args):
         lk_ui = self.forms["LK"]
+        current_bs = lk_ui.cboBS_Lich.currentData()
         dv_id = lk_ui.cboDV_Lich.currentData()
         chuyen_khoa = self.dv_specialty_map.get(dv_id)
         ca_id = lk_ui.cboCaLamLich.currentData()
@@ -1419,6 +1168,11 @@ class MainApp(QMainWindow):
 
             for bs in list_bs:
                 lk_ui.cboBS_Lich.addItem(f"{bs['id']} - {bs['ten']}", bs['id'])
+            idx_bs = lk_ui.cboBS_Lich.findData(current_bs)
+            if idx_bs >= 0:
+                lk_ui.cboBS_Lich.setCurrentIndex(idx_bs)
+            elif lk_ui.cboBS_Lich.count() > 0 and lk_ui.cboBS_Lich.itemData(0) is None and lk_ui.cboBS_Lich.count() > 1:
+                lk_ui.cboBS_Lich.setCurrentIndex(1)
         except: pass
     def on_table_click_lichkham(self):
         curr = self.forms["LK"].tableLichKham.currentRow()
@@ -1547,6 +1301,9 @@ class MainApp(QMainWindow):
             line_edit.clear()
         for text_edit in form_widget.findChildren(QTextEdit):
             text_edit.clear()
+        if form_widget == self.forms.get("BS") and hasattr(form_widget, "scheduleComboMap"):
+            for cbo in form_widget.scheduleComboMap.values():
+                cbo.setCurrentIndex(0)
 
     def parse_id(self, id_str):
         return int(id_str) if str(id_str).strip().isdigit() else id_str
@@ -1575,6 +1332,125 @@ class MainApp(QMainWindow):
         sdt = self.validate_sdt(sdt)
         ngay_sinh = self.chuan_hoa_ngay_nhap(ngay_sinh) if str(ngay_sinh or "").strip() else ""
         return ten, sdt, ngay_sinh
+
+    def chuan_hoa_text_tim_kiem(self, text):
+        value = str(text or "").strip().lower()
+        value = value.replace("đ", "d").replace("Đ", "d")
+        return "".join(ch for ch in unicodedata.normalize("NFD", value) if unicodedata.category(ch) != "Mn")
+
+    def tim_index_combo_theo_text(self, combo, text, bo_qua_du_lieu=(None, "NEW")):
+        keyword = self.chuan_hoa_text_tim_kiem(text)
+        if not keyword:
+            return -1
+        for i in range(combo.count()):
+            data = combo.itemData(i)
+            if data in bo_qua_du_lieu:
+                continue
+            item_text = self.chuan_hoa_text_tim_kiem(combo.itemText(i))
+            item_id = self.chuan_hoa_text_tim_kiem(data)
+            if item_id == keyword:
+                return i
+            if item_text == keyword or item_text.startswith(f"{keyword} -") or keyword in item_text:
+                return i
+        return -1
+
+    def lay_du_lieu_combo_hien_tai(self, combo, bo_qua_du_lieu=(None, "NEW")):
+        data = combo.currentData()
+        if data not in bo_qua_du_lieu:
+            return data
+        idx = self.tim_index_combo_theo_text(combo, combo.currentText(), bo_qua_du_lieu=bo_qua_du_lieu)
+        if idx >= 0:
+            combo.setCurrentIndex(idx)
+            return combo.itemData(idx)
+        return data
+
+    def chon_benh_nhan_vua_them(self, ten, sdt="", ngay_sinh=""):
+        if "LK" not in getattr(self, "forms", {}):
+            return None
+        ten_norm = self.chuan_hoa_text_tim_kiem(ten)
+        sdt_norm = "".join(ch for ch in str(sdt or "").strip() if ch.isdigit())
+        ngay_norm = self.chuan_hoa_ngay_nhap(ngay_sinh) if str(ngay_sinh or "").strip() else ""
+        candidates = []
+        for bn in BenhNhanController.get_all():
+            if self.chuan_hoa_text_tim_kiem(getattr(bn, "ten", "")) != ten_norm:
+                continue
+            if sdt_norm and str(getattr(bn, "sdt", "") or "").strip() != sdt_norm:
+                continue
+            if ngay_norm and str(getattr(bn, "ngay_sinh", "") or "").strip() != ngay_norm:
+                continue
+            candidates.append(bn)
+        if not candidates:
+            return None
+        benh_nhan = max(candidates, key=lambda bn: int(getattr(bn, "id", 0) or 0))
+        combo_bn = self.forms["LK"].cboBN_Lich
+        idx = combo_bn.findData(getattr(benh_nhan, "id", None))
+        if idx >= 0:
+            combo_bn.setCurrentIndex(idx)
+            return combo_bn.itemData(idx)
+        return None
+
+    def mo_form_them_benh_nhan_tu_lich(self, ten_goi_y=""):
+        popup = ThemBenhNhanWindow(self, preset_name=ten_goi_y)
+        if popup.exec():
+            return self.lay_du_lieu_combo_hien_tai(self.forms["LK"].cboBN_Lich)
+        combo_bn = self.forms["LK"].cboBN_Lich
+        if combo_bn.count() > 0 and combo_bn.currentData() == "NEW":
+            combo_bn.setCurrentIndex(0)
+        return None
+
+    def dam_bao_da_chon_benh_nhan_lich(self, tu_dong_mo_form=False):
+        combo_bn = self.forms["LK"].cboBN_Lich
+        id_bn = self.lay_du_lieu_combo_hien_tai(combo_bn)
+        if id_bn == "NEW":
+            self.mo_form_them_benh_nhan_tu_lich(combo_bn.currentText())
+            return self.lay_du_lieu_combo_hien_tai(combo_bn)
+        if id_bn not in (None, "", "NEW"):
+            return id_bn
+
+        text_nhap = combo_bn.currentText().strip()
+        if not text_nhap or text_nhap.startswith("--"):
+            return None
+
+        idx = self.tim_index_combo_theo_text(combo_bn, text_nhap)
+        if idx >= 0:
+            combo_bn.setCurrentIndex(idx)
+            return combo_bn.itemData(idx)
+
+        if tu_dong_mo_form:
+            hoi = QMessageBox.question(
+                self,
+                "Chua co benh nhan",
+                f"Khong tim thay benh nhan '{text_nhap}'. Ban co muon them benh nhan moi ngay bay gio khong?",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            )
+            if hoi == QMessageBox.StandardButton.Yes:
+                self.mo_form_them_benh_nhan_tu_lich(text_nhap)
+                return self.lay_du_lieu_combo_hien_tai(combo_bn)
+        return None
+
+    def lay_du_lieu_form_lich_kham(self, tu_dong_mo_form_benh_nhan=False):
+        f = self.forms["LK"]
+        id_bn = self.dam_bao_da_chon_benh_nhan_lich(tu_dong_mo_form_benh_nhan)
+        id_bs = self.lay_du_lieu_combo_hien_tai(f.cboBS_Lich, bo_qua_du_lieu=(None,))
+        id_dv = self.lay_du_lieu_combo_hien_tai(f.cboDV_Lich, bo_qua_du_lieu=(None,))
+        id_phong = self.lay_du_lieu_combo_hien_tai(f.cboPK_Lich, bo_qua_du_lieu=(None,))
+        ca_id = f.cboCaLamLich.currentData() or f.cboCaLamLich.currentText().split(" - ")[0]
+
+        thieu = []
+        if id_bn in (None, "", "NEW"):
+            thieu.append("bệnh nhân")
+        if id_dv in (None, ""):
+            thieu.append("dịch vụ")
+        if id_bs in (None, ""):
+            thieu.append("bác sĩ")
+        if id_phong in (None, ""):
+            thieu.append("phòng khám")
+
+        if thieu:
+            QMessageBox.warning(self, "Thông báo", f"Vui lòng chọn đầy đủ: {', '.join(thieu)}.")
+            return None
+
+        return id_bn, id_bs, id_dv, id_phong, ca_id
 
     def validate_tai_khoan_input(self, username, password, ho_ten, quyen):
         username = str(username or "").strip()
@@ -1870,12 +1746,6 @@ class MainApp(QMainWindow):
                 else:
                     QMessageBox.critical(self, "Lỗi", f"Không thể xóa bác sĩ này.\nChi tiết: {e}")
 
-    def xu_ly_tim_kiem_bs(self):
-        keyword, ok = QInputDialog.getText(self, "Tìm kiếm", "Nhập tên bác sĩ:")
-        if ok and keyword:
-            res = BacSiController.search(keyword)
-            self.fill_table(self.forms["BS"].tableBacSi, res, ["ID", "Họ Tên", "Giới Tính", "Chuyên Khoa"])
-
     # ================= LOGIC BỆNH NHÂN =================
     def xu_ly_tim_kiem_bs(self):
         keyword, ok = QInputDialog.getText(self, "TÃ¬m kiáº¿m", "Nháº­p tÃªn bÃ¡c sÄ©:")
@@ -1894,11 +1764,6 @@ class MainApp(QMainWindow):
             f.txtGioiTinh.setText(f.tableBenhNhan.item(row, 4).text())
             f.txtNgaySinh.setText(f.tableBenhNhan.item(row, 5).text())
 
-            benh_nhan = next((bn for bn in BenhNhanController.get_all() if str(getattr(bn, "id", "")) == f.txtIDBN.text().strip()), None)
-            if benh_nhan and hasattr(f, "txtTienSuBenh"):
-                f.txtTienSuBenh.setPlainText(str(getattr(benh_nhan, "tien_su_benh", "") or ""))
-                f.txtDiUng.setPlainText(str(getattr(benh_nhan, "di_ung", "") or ""))
-                f.txtGhiChuYKhoa.setPlainText(str(getattr(benh_nhan, "ghi_chu_y_khoa", "") or ""))
 
     def hien_thi_lich_su_benh_nhan(self):
         bn_ui = self.forms["BN"]
@@ -1974,9 +1839,6 @@ class MainApp(QMainWindow):
                 f.txtDiaChi.text().strip(),
                 f.txtGioiTinh.text().strip(),
                 ngay_sinh,
-                f.txtTienSuBenh.toPlainText().strip() if hasattr(f, "txtTienSuBenh") else "",
-                f.txtDiUng.toPlainText().strip() if hasattr(f, "txtDiUng") else "",
-                f.txtGhiChuYKhoa.toPlainText().strip() if hasattr(f, "txtGhiChuYKhoa") else "",
             )
             QMessageBox.information(self, "Thành công", "Cập nhật thông tin Bệnh nhân thành công!")
             self.load_data_benhnhan()
@@ -2018,11 +1880,7 @@ class MainApp(QMainWindow):
                 else:
                     QMessageBox.critical(self, "Lỗi", f"Không thể xóa bệnh nhân này.\nChi tiết: {e}")
 
-    def xu_ly_tim_kiem_bn(self):
-        keyword, ok = QInputDialog.getText(self, "Tìm kiếm", "Nhập tên/SĐT:")
-        if ok and keyword:
-            res = BenhNhanController.search(keyword)
-            self.fill_table(self.forms["BN"].tableBenhNhan, res, ["ID", "Tên", "SĐT", "Địa chỉ", "GT", "Ngày sinh"])
+    
     def xu_ly_tim_kiem_bn(self):
         keyword, ok = QInputDialog.getText(self, "TÃ¬m kiáº¿m", "Nháº­p tÃªn/SÄT:")
         if ok and keyword:
@@ -2039,6 +1897,7 @@ class MainApp(QMainWindow):
         table.setRowCount(0)
         table.setColumnCount(4)
         table.setHorizontalHeaderLabels(["ID", "Tên Ca", "Bắt Đầu", "Kết Thúc"])
+        table.verticalHeader().setVisible(False)
         
         for i, row in enumerate(data):
             table.insertRow(i)
@@ -2631,7 +2490,7 @@ class MainApp(QMainWindow):
         f = self.forms["TAIKHOAN"]
         id_tk = f.txtID.text().strip()
         if not id_tk:
-            QMessageBox.warning(self, "Thong bao", "Vui long chon tai khoan can sua.")
+            QMessageBox.warning(self, "Thông báo", "Vui lòng chọn tài khoản cần sửa.")
             return
         try:
             username, password, ho_ten, quyen = self.validate_tai_khoan_input(
@@ -2642,7 +2501,7 @@ class MainApp(QMainWindow):
                 QMessageBox.warning(self, "Thong bao", "Username da ton tai.")
                 return
             TaiKhoanController.update(self.parse_id(id_tk), username, password, ho_ten, quyen)
-            QMessageBox.information(self, "Thanh cong", "Da cap nhat tai khoan.")
+            QMessageBox.information(self, "Thành công", "Đã cập nhật tài khoan.")
             self.load_data_taikhoan()
             self.clear_form_inputs(f)
         except ValueError as ve:
@@ -2733,6 +2592,7 @@ class MainApp(QMainWindow):
             table.setRowCount(0)
             table.setColumnCount(len(headers))
             table.setHorizontalHeaderLabels(headers)
+            table.verticalHeader().setVisible(False)
             return
 
         table.setRowCount(0)
@@ -2741,6 +2601,7 @@ class MainApp(QMainWindow):
         table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        table.verticalHeader().setVisible(False)
 
         for r, obj in enumerate(data):
             table.insertRow(r)
@@ -2760,9 +2621,6 @@ class MainApp(QMainWindow):
             if "trạng thái" in header_text or "trang thai" in header_text:
                 self.ap_dung_mau_trang_thai_cho_bang(table, idx)
                 break
-
-    def load_data_benhnhan(self):
-        self.fill_table(self.forms["BN"].tableBenhNhan, BenhNhanController.get_all(), ["ID", "Tên", "SĐT", "Địa chỉ", "GT", "Ngày sinh"])
 
     def load_data_bacsi(self):
         self.fill_table(self.forms["BS"].tableBacSi, BacSiController.get_all(), ["ID", "Họ Tên", "Giới Tính", "Chuyên Khoa", "Ca Làm"])
@@ -2896,6 +2754,400 @@ class MainApp(QMainWindow):
     def dang_xuat(self):
         if QMessageBox.question(self, 'Xác nhận', 'Bạn muốn đăng xuất?', QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No) == QMessageBox.StandardButton.Yes:
             self.close()
+
+    def setup_goi_y_lich_kham(self):
+        lk_ui = self.forms["LK"]
+        current_bn = lk_ui.cboBN_Lich.currentData()
+        current_phong = lk_ui.cboPK_Lich.currentData()
+        current_dv = lk_ui.cboDV_Lich.currentData()
+        current_ca = lk_ui.cboCaLamLich.currentData() or lk_ui.cboCaLamLich.currentText().split(" - ")[0]
+
+        lk_ui.cboBN_Lich.blockSignals(True)
+        lk_ui.cboBN_Lich.clear()
+        lk_ui.cboBN_Lich.addItem("-- Nhap/Tim ID Benh Nhan --", None)
+        lk_ui.cboBN_Lich.addItem("[+] Them Benh Nhan Moi...", "NEW")
+        try:
+            for bn in BenhNhanController.get_all():
+                lk_ui.cboBN_Lich.addItem(f"{bn.id} - {bn.ten}", bn.id)
+        except Exception:
+            pass
+        lk_ui.cboBN_Lich.blockSignals(False)
+        lk_ui.cboBN_Lich.setEditable(True)
+        lk_ui.cboBN_Lich.setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
+        lk_ui.cboBN_Lich.setMaxVisibleItems(15)
+        idx_bn = lk_ui.cboBN_Lich.findData(current_bn)
+        lk_ui.cboBN_Lich.setCurrentIndex(idx_bn if idx_bn >= 0 else 0)
+        if lk_ui.cboBN_Lich.lineEdit():
+            lk_ui.cboBN_Lich.lineEdit().setPlaceholderText("Nhap hoac tim ID benh nhan...")
+            lk_ui.cboBN_Lich.lineEdit().setClearButtonEnabled(True)
+            try:
+                lk_ui.cboBN_Lich.lineEdit().returnPressed.disconnect()
+            except Exception:
+                pass
+            lk_ui.cboBN_Lich.lineEdit().returnPressed.connect(self.chon_benh_nhan_theo_tu_khoa)
+        completer = lk_ui.cboBN_Lich.completer()
+        if completer:
+            completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+            completer.setFilterMode(Qt.MatchFlag.MatchContains)
+            completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        try:
+            lk_ui.cboBN_Lich.activated.disconnect()
+        except Exception:
+            pass
+        lk_ui.cboBN_Lich.activated.connect(self.xu_ly_chon_benh_nhan)
+
+        lk_ui.cboPK_Lich.clear()
+        try:
+            for p in LichKhamController.get_phongkham_goi_y():
+                lk_ui.cboPK_Lich.addItem(p["ten_phong"], p["id"])
+        except Exception:
+            pass
+        idx_phong = lk_ui.cboPK_Lich.findData(current_phong)
+        if idx_phong >= 0:
+            lk_ui.cboPK_Lich.setCurrentIndex(idx_phong)
+        elif lk_ui.cboPK_Lich.count() > 0:
+            lk_ui.cboPK_Lich.setCurrentIndex(0)
+
+        lk_ui.cboDV_Lich.clear()
+        self.dv_specialty_map = {}
+        try:
+            for dv in LichKhamController.get_dichvu_goi_y():
+                lk_ui.cboDV_Lich.addItem(dv["ten_dich_vu"], dv["id"])
+                self.dv_specialty_map[dv["id"]] = dv["chuyen_khoa"]
+        except Exception:
+            pass
+        idx_dv = lk_ui.cboDV_Lich.findData(current_dv)
+        if idx_dv >= 0:
+            lk_ui.cboDV_Lich.setCurrentIndex(idx_dv)
+        elif lk_ui.cboDV_Lich.count() > 0:
+            lk_ui.cboDV_Lich.setCurrentIndex(0)
+
+        lk_ui.cboCaLamLich.blockSignals(True)
+        lk_ui.cboCaLamLich.clear()
+        lk_ui.cboCaLamLich.addItem("1 - Ca Sang", "1")
+        lk_ui.cboCaLamLich.addItem("2 - Ca Chieu", "2")
+        lk_ui.cboCaLamLich.addItem("3 - Ca Toi", "3")
+        idx_ca = lk_ui.cboCaLamLich.findData(str(current_ca))
+        lk_ui.cboCaLamLich.setCurrentIndex(idx_ca if idx_ca >= 0 else 0)
+        lk_ui.cboCaLamLich.blockSignals(False)
+
+        try:
+            lk_ui.cboDV_Lich.currentIndexChanged.disconnect()
+        except Exception:
+            pass
+        try:
+            lk_ui.cboCaLamLich.currentIndexChanged.disconnect()
+        except Exception:
+            pass
+        lk_ui.cboDV_Lich.currentIndexChanged.connect(self.loc_bac_si_thong_minh)
+        lk_ui.cboCaLamLich.currentIndexChanged.connect(self.loc_bac_si_thong_minh)
+        self.loc_bac_si_thong_minh()
+
+    def xu_ly_chon_benh_nhan(self, *args):
+        combo_bn = self.forms["LK"].cboBN_Lich
+        if combo_bn.currentData() == "NEW":
+            self.mo_form_them_benh_nhan_tu_lich(combo_bn.currentText())
+
+    def luu_lich_kham(self):
+        lk_ui = self.forms["LK"]
+        self.chon_benh_nhan_theo_tu_khoa()
+        data_lich = self.lay_du_lieu_form_lich_kham(tu_dong_mo_form_benh_nhan=True)
+        if not data_lich:
+            return
+        id_bn, id_bs, id_dv, id_phong, ca_id = data_lich
+
+        values = (
+            id_bn, id_bs, id_phong, id_dv,
+            lk_ui.txtNgayKham.text(), lk_ui.txtGioKham.text(),
+            lk_ui.comboBoxTrangThai.currentText(), ca_id
+        )
+
+        try:
+            idx = lk_ui.txtIDLich.text()
+            if not idx:
+                LichKhamController.insert(values)
+            else:
+                LichKhamController.update(int(idx), values)
+            self.load_data_lichkham()
+            self.lam_moi_lich_kham()
+            QMessageBox.information(self, "Thành công", "Đã lưu thông tin lịch khám!")
+        except Exception as e:
+            QMessageBox.critical(self, "Lỗi", f"Không thể lưu: {e}")
+
+    def xu_ly_them_lk(self):
+        f = self.forms["LK"]
+        self.chon_benh_nhan_theo_tu_khoa()
+        data_lich = self.lay_du_lieu_form_lich_kham(tu_dong_mo_form_benh_nhan=True)
+        if not data_lich:
+            return
+        id_bn, id_bs, id_dv, id_phong, ca_id = data_lich
+
+        if self.la_trung_lich_bac_si(id_bs, f.txtNgayKham.text(), f.txtGioKham.text(), ca_id):
+            return
+
+        values = (
+            id_bn, id_bs, id_phong, id_dv,
+            f.txtNgayKham.text(), f.txtGioKham.text(),
+            f.comboBoxTrangThai.currentText(), ca_id
+        )
+
+        try:
+            LichKhamController.insert(values)
+            if self.current_role in ("admin", "quan_ly", "le_tan"):
+                self.tao_thong_bao_lich_kham_moi(id_bs, id_bn, f.txtNgayKham.text(), f.txtGioKham.text())
+            self.load_data_lichkham()
+            self.cap_nhat_danh_dau_calendar()
+            self.lam_moi_lich_kham()
+            QMessageBox.information(self, "Thành công", "Đã thêm lịch khám!")
+        except Exception as e:
+            QMessageBox.critical(self, "Lỗi", f"Không thể thêm: {e}")
+
+    def xu_ly_sua_lk(self):
+        f = self.forms["LK"]
+        self.chon_benh_nhan_theo_tu_khoa()
+        idx = f.txtIDLich.text()
+        if not idx:
+            QMessageBox.warning(self, "Cảnh báo", "Vui lòng click chọn một lịch khám trên bảng để sửa!")
+            return
+
+        data_lich = self.lay_du_lieu_form_lich_kham(tu_dong_mo_form_benh_nhan=True)
+        if not data_lich:
+            return
+        id_bn, id_bs, id_dv, id_phong, ca_id = data_lich
+
+        if self.current_role == "bac_si":
+            lich_cu = self.lay_lich_kham_theo_id(idx)
+            if not lich_cu or str(lich_cu.bacsi_id) != str(self.current_doctor_id):
+                QMessageBox.warning(self, "Không có quyền", "Bạn chỉ được sửa lịch khám của chính mình.")
+                return
+            id_bs = self.current_doctor_id
+
+        if self.la_trung_lich_bac_si(id_bs, f.txtNgayKham.text(), f.txtGioKham.text(), ca_id, idx):
+            return
+
+        mo_ta, ok = self.nhap_mo_ta_khi_doi_trang_thai(idx, f.comboBoxTrangThai.currentText())
+        if not ok:
+            return
+
+        values = (
+            id_bn, id_bs, id_phong, id_dv,
+            f.txtNgayKham.text(), f.txtGioKham.text(),
+            f.comboBoxTrangThai.currentText(), ca_id
+        )
+        if mo_ta is not None:
+            values = (*values, mo_ta)
+
+        try:
+            LichKhamController.update(int(idx), values)
+            self.dong_bo_hoa_don_theo_trang_thai(idx, f.comboBoxTrangThai.currentText(), f.txtNgayKham.text())
+            self.load_data_lichkham()
+            QMessageBox.information(self, "Thành công", "Đã cập nhật lịch khám!")
+        except Exception as e:
+            QMessageBox.critical(self, "Lỗi", f"Không thể cập nhật: {e}")
+
+    def do_du_lieu_bacsi_len_form(self):
+        row = self.forms["BS"].tableBacSi.currentRow()
+        if row >= 0:
+            self.forms["BS"].txtIDBS.setText(self.forms["BS"].tableBacSi.item(row, 0).text())
+            self.forms["BS"].txtTenBS.setText(self.forms["BS"].tableBacSi.item(row, 1).text())
+            self.forms["BS"].txtGioiTinhBS.setText(self.forms["BS"].tableBacSi.item(row, 2).text())
+            self.forms["BS"].txtChuyenKhoa.setText(self.forms["BS"].tableBacSi.item(row, 3).text())
+            try:
+                self.do_lich_tuan_bac_si_len_form(self.parse_id(self.forms["BS"].tableBacSi.item(row, 0).text()))
+            except Exception:
+                pass
+            if self.current_role == "bac_si":
+                self.load_data_benhnhan()
+
+    def xu_ly_them_bs(self):
+        f = self.forms["BS"]
+        ten = f.txtTenBS.text().strip()
+        if not ten:
+            QMessageBox.warning(self, "Cảnh báo", "Vui lòng nhập tên Bác sĩ!")
+            return
+        schedule_map = self.lay_lich_tuan_tu_form_bac_si()
+        first_ca = next(iter(schedule_map.values()), None)
+        BacSiController.insert(ten, f.txtGioiTinhBS.text(), f.txtChuyenKhoa.text(), first_ca, schedule_map)
+        QMessageBox.information(self, "Thành công", "Đã thêm Bác sĩ mới!")
+        self.load_data_bacsi()
+        self.clear_form_inputs(f)
+        self.refresh_lich_tuan_bac_si_ui()
+
+    def xu_ly_sua_bs(self):
+        f = self.forms["BS"]
+        id_bs = f.txtIDBS.text()
+        if not id_bs:
+            QMessageBox.warning(self, "Cảnh báo", "Vui lòng chọn Bác sĩ cần sửa!")
+            return
+        schedule_map = self.lay_lich_tuan_tu_form_bac_si()
+        first_ca = next(iter(schedule_map.values()), None)
+        BacSiController.update(self.parse_id(id_bs), f.txtTenBS.text(), f.txtGioiTinhBS.text(), f.txtChuyenKhoa.text(), first_ca, schedule_map)
+        QMessageBox.information(self, "Thành công", "Cập nhật thông tin Bác sĩ thành công!")
+        self.load_data_bacsi()
+        self.clear_form_inputs(f)
+        self.refresh_lich_tuan_bac_si_ui()
+
+    def load_data_bacsi(self):
+        self.refresh_lich_tuan_bac_si_ui()
+        self.fill_table(self.forms["BS"].tableBacSi, BacSiController.get_all(), ["ID", "Họ Tên", "Giới Tính", "Chuyên Khoa", "Lịch tuần"])
+
+    def loc_bac_si_thong_minh(self, *args):
+        lk_ui = self.forms["LK"]
+        current_bs = lk_ui.cboBS_Lich.currentData()
+        dv_id = lk_ui.cboDV_Lich.currentData()
+        chuyen_khoa = self.dv_specialty_map.get(dv_id)
+        ca_id = lk_ui.cboCaLamLich.currentData()
+        if ca_id is None:
+            ca_text = lk_ui.cboCaLamLich.currentText()
+            ca_id = ca_text.split(" - ")[0] if " - " in ca_text else "1"
+        ngay_kham = lk_ui.txtNgayKham.text().strip() if hasattr(lk_ui, "txtNgayKham") else ""
+
+        lk_ui.cboBS_Lich.clear()
+        try:
+            list_bs = []
+            if chuyen_khoa:
+                list_bs = BacSiScheduleController.get_bacsi_theo_lich_tuan(chuyen_khoa, ca_id, ngay_kham)
+                if not list_bs:
+                    list_bs = LichKhamController.get_bacsi_theo_loc(chuyen_khoa, ca_id)
+
+            if not list_bs and chuyen_khoa:
+                lk_ui.cboBS_Lich.addItem("Khong co BS dung lich tuan - hien cung chuyen khoa", None)
+                list_bs = LichKhamController.get_bacsi_theo_chuyen_khoa(chuyen_khoa)
+            elif not list_bs:
+                lk_ui.cboBS_Lich.addItem("Chua chon dich vu - hien tat ca BS", None)
+                list_bs = LichKhamController.get_all_bacsi_goi_y()
+
+            for bs in list_bs:
+                lk_ui.cboBS_Lich.addItem(f"{bs['id']} - {bs['ten']}", bs['id'])
+            idx_bs = lk_ui.cboBS_Lich.findData(current_bs)
+            if idx_bs >= 0:
+                lk_ui.cboBS_Lich.setCurrentIndex(idx_bs)
+            elif lk_ui.cboBS_Lich.count() > 0 and lk_ui.cboBS_Lich.itemData(0) is None and lk_ui.cboBS_Lich.count() > 1:
+                lk_ui.cboBS_Lich.setCurrentIndex(1)
+        except Exception:
+            pass
+
+    def xu_ly_them_ca_lam(self):
+        f = self.forms["CL"]
+        ten = f.txtTenCa.text().strip()
+        bd = f.txtGioBD.text().strip()
+        kt = f.txtGioKT.text().strip()
+        if not ten or not bd or not kt:
+            QMessageBox.warning(self, "Lỗi", "Vui lòng nhập đầy đủ thông tin ca làm!")
+            return
+        if CaLamController.insert(ten, bd, kt):
+            QMessageBox.information(self, "Thành công", "Đã thêm ca làm!")
+            self.gui_thong_bao_cho_admin("Thêm", "Ca làm", f"Tên ca: {ten}, {bd}-{kt}.")
+            self.load_data_calam()
+            self.refresh_lich_tuan_bac_si_ui()
+
+    def xu_ly_sua_ca_lam(self):
+        f = self.forms["CL"]
+        id_ca = f.txtIDCa.text()
+        if not id_ca:
+            return
+        ten = f.txtTenCa.text().strip()
+        bd = f.txtGioBD.text().strip()
+        kt = f.txtGioKT.text().strip()
+        if CaLamController.update(int(id_ca), ten, bd, kt):
+            QMessageBox.information(self, "Thành công", "Đã cập nhật ca làm!")
+            self.gui_thong_bao_cho_admin("Sửa", "Ca làm", f"ID: {id_ca}, Tên ca: {ten}.")
+            self.load_data_calam()
+            self.refresh_lich_tuan_bac_si_ui()
+
+    def xu_ly_them_bs(self):
+        f = self.forms["BS"]
+        ten = f.txtTenBS.text().strip()
+        if not ten:
+            QMessageBox.warning(self, "Cảnh báo", "Vui lòng nhập tên Bác sĩ!")
+            return
+        schedule_map = self.lay_lich_tuan_tu_form_bac_si()
+        first_ca = next(iter(schedule_map.values()), None)
+        BacSiController.insert(ten, f.txtGioiTinhBS.text(), f.txtChuyenKhoa.text(), first_ca, schedule_map)
+        QMessageBox.information(self, "Thành công", "Đã thêm Bác sĩ mới!")
+        self.gui_thong_bao_cho_admin("Thêm", "Bác sĩ", f"Tên: {ten}.")
+        self.load_data_bacsi()
+        self.clear_form_inputs(f)
+        self.refresh_lich_tuan_bac_si_ui()
+
+    def xu_ly_sua_bs(self):
+        f = self.forms["BS"]
+        id_bs = f.txtIDBS.text()
+        if not id_bs:
+            QMessageBox.warning(self, "Cảnh báo", "Vui lòng chọn Bác sĩ cần sửa!")
+            return
+        schedule_map = self.lay_lich_tuan_tu_form_bac_si()
+        first_ca = next(iter(schedule_map.values()), None)
+        BacSiController.update(self.parse_id(id_bs), f.txtTenBS.text(), f.txtGioiTinhBS.text(), f.txtChuyenKhoa.text(), first_ca, schedule_map)
+        QMessageBox.information(self, "Thành công", "Cập nhật thông tin Bác sĩ thành công!")
+        self.gui_thong_bao_cho_admin("Sửa", "Bác sĩ", f"ID: {id_bs}, Tên: {f.txtTenBS.text().strip()}.")
+        self.load_data_bacsi()
+        self.clear_form_inputs(f)
+        self.refresh_lich_tuan_bac_si_ui()
+
+    def xu_ly_them_lk(self):
+        f = self.forms["LK"]
+        self.chon_benh_nhan_theo_tu_khoa()
+        data_lich = self.lay_du_lieu_form_lich_kham(tu_dong_mo_form_benh_nhan=True)
+        if not data_lich:
+            return
+        id_bn, id_bs, id_dv, id_phong, ca_id = data_lich
+        if self.la_trung_lich_bac_si(id_bs, f.txtNgayKham.text(), f.txtGioKham.text(), ca_id):
+            return
+        values = (
+            id_bn, id_bs, id_phong, id_dv,
+            f.txtNgayKham.text(), f.txtGioKham.text(),
+            f.comboBoxTrangThai.currentText(), ca_id
+        )
+        try:
+            LichKhamController.insert(values)
+            if self.current_role in ("admin", "quan_ly", "le_tan"):
+                self.tao_thong_bao_lich_kham_moi(id_bs, id_bn, f.txtNgayKham.text(), f.txtGioKham.text())
+            self.load_data_lichkham()
+            self.cap_nhat_danh_dau_calendar()
+            self.lam_moi_lich_kham()
+            QMessageBox.information(self, "Thành công", "Đã thêm lịch khám!")
+            self.gui_thong_bao_cho_admin("Thêm", "Lịch khám", f"Bệnh nhân ID: {id_bn}, Bác sĩ ID: {id_bs}, Ngày: {f.txtNgayKham.text()}, Giờ: {f.txtGioKham.text()}.")
+        except Exception as e:
+            QMessageBox.critical(self, "Lỗi", f"Không thể thêm: {e}")
+
+    def xu_ly_sua_lk(self):
+        f = self.forms["LK"]
+        self.chon_benh_nhan_theo_tu_khoa()
+        idx = f.txtIDLich.text()
+        if not idx:
+            QMessageBox.warning(self, "Cảnh báo", "Vui lòng click chọn một lịch khám trên bảng để sửa!")
+            return
+        data_lich = self.lay_du_lieu_form_lich_kham(tu_dong_mo_form_benh_nhan=True)
+        if not data_lich:
+            return
+        id_bn, id_bs, id_dv, id_phong, ca_id = data_lich
+        if self.current_role == "bac_si":
+            lich_cu = self.lay_lich_kham_theo_id(idx)
+            if not lich_cu or str(lich_cu.bacsi_id) != str(self.current_doctor_id):
+                QMessageBox.warning(self, "Không có quyền", "Bạn chỉ được sửa lịch khám của chính mình.")
+                return
+            id_bs = self.current_doctor_id
+        if self.la_trung_lich_bac_si(id_bs, f.txtNgayKham.text(), f.txtGioKham.text(), ca_id, idx):
+            return
+        mo_ta, ok = self.nhap_mo_ta_khi_doi_trang_thai(idx, f.comboBoxTrangThai.currentText())
+        if not ok:
+            return
+        values = (
+            id_bn, id_bs, id_phong, id_dv,
+            f.txtNgayKham.text(), f.txtGioKham.text(),
+            f.comboBoxTrangThai.currentText(), ca_id
+        )
+        if mo_ta is not None:
+            values = (*values, mo_ta)
+        try:
+            LichKhamController.update(int(idx), values)
+            self.dong_bo_hoa_don_theo_trang_thai(idx, f.comboBoxTrangThai.currentText(), f.txtNgayKham.text())
+            self.load_data_lichkham()
+            QMessageBox.information(self, "Thành công", "Đã cập nhật lịch khám!")
+            self.gui_thong_bao_cho_admin("Sửa", "Lịch khám", f"ID lịch: {idx}, Trạng thái: {f.comboBoxTrangThai.currentText()}.")
+        except Exception as e:
+            QMessageBox.critical(self, "Lỗi", f"Không thể cập nhật: {e}")
 
 # ================= RUN APP =================
 if __name__ == "__main__":
