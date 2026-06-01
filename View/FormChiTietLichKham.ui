@@ -24,6 +24,28 @@
         min-height: 22px; font-size: 13px;
     }
     QLineEdit:focus, QPlainTextEdit:focus, QComboBox:focus, QDateEdit:focus, QTimeEdit:focus { border: 1px solid #7380E8; background-color: #242c44;}
+    QComboBox QAbstractItemView {
+        background-color: #1E2538;
+        color: #E2E8F0;
+        border: 1px solid #2A3143;
+        selection-background-color: #334155;
+        selection-color: #E2E8F0;
+        outline: 0;
+    }
+    QComboBox QAbstractItemView::item {
+        min-height: 28px;
+        padding: 6px 10px;
+        color: #E2E8F0;
+        background-color: #1E2538;
+    }
+    QComboBox QAbstractItemView::item:selected {
+        color: #E2E8F0;
+        background-color: #334155;
+    }
+    QComboBox QAbstractItemView::item:hover {
+        color: #FFFFFF;
+        background-color: #2A3143;
+    }
     QLineEdit:read-only { background-color: #262D42; color: #64748B; border: none; }
     QPushButton { border-radius: 6px; padding: 8px 20px; font-weight: bold; color: white; min-width: 80px; font-size: 13px;}
     QPushButton:hover { opacity: 0.8; }

@@ -10,10 +10,13 @@ class ThongKeController:
             JOIN DichVu dv ON lk.dichvu_id = dv.id
         """
         params = ()
-        # Nếu người dùng chọn lọc theo tháng cụ thể
+
         if thang and nam:
             sql += " WHERE strftime('%m', lk.ngay_kham) = %s AND strftime('%Y', lk.ngay_kham) = %s "
             params = (str(thang).zfill(2), str(nam))
+        elif nam:
+            sql += " WHERE strftime('%Y', lk.ngay_kham) = %s "
+            params = (str(nam),)
             
         sql += " GROUP BY dv.ten_dich_vu"
         return fetch_all(sql, params)
@@ -32,10 +35,13 @@ class ThongKeController:
             JOIN BenhNhan bn ON lk.benhnhan_id = bn.id
         """
         params = ()
-        # Nếu người dùng chọn lọc theo tháng cụ thể
+
         if thang and nam:
             sql += " WHERE strftime('%m', lk.ngay_kham) = %s AND strftime('%Y', lk.ngay_kham) = %s "
             params = (str(thang).zfill(2), str(nam))
+        elif nam:
+            sql += " WHERE strftime('%Y', lk.ngay_kham) = %s "
+            params = (str(nam),)
             
         sql += " ORDER BY lk.ngay_kham DESC"
         return fetch_all(sql, params)

@@ -35,6 +35,12 @@
       <string>Thông tin chi tiết Lịch khám</string>
      </property>
      <layout class="QGridLayout">
+      <property name="horizontalSpacing">
+       <number>12</number>
+      </property>
+      <property name="verticalSpacing">
+       <number>10</number>
+      </property>
       <item row="0" column="0">
        <widget class="QLabel" name="lblIDLK">
         <property name="text">
@@ -44,6 +50,18 @@
       </item>
       <item row="1" column="0">
        <widget class="QLineEdit" name="txtIDLich">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>42</height>
+         </size>
+        </property>
         <property name="readOnly">
          <bool>false</bool>
         </property>
@@ -57,7 +75,20 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QComboBox" name="cboBN_Lich"/>
+       <widget class="QComboBox" name="cboBN_Lich">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>42</height>
+         </size>
+        </property>
+       </widget>
       </item>
       <item row="0" column="2">
        <widget class="QLabel" name="label">
@@ -67,7 +98,20 @@
        </widget>
       </item>
       <item row="1" column="2">
-       <widget class="QComboBox" name="cboBS_Lich"/>
+       <widget class="QComboBox" name="cboBS_Lich">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>42</height>
+         </size>
+        </property>
+       </widget>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label">
@@ -77,7 +121,20 @@
        </widget>
       </item>
       <item row="3" column="0">
-       <widget class="QComboBox" name="cboPK_Lich"/>
+       <widget class="QComboBox" name="cboPK_Lich">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>42</height>
+         </size>
+        </property>
+       </widget>
       </item>
       <item row="2" column="1">
        <widget class="QLabel" name="label">
@@ -87,7 +144,20 @@
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QComboBox" name="cboDV_Lich"/>
+       <widget class="QComboBox" name="cboDV_Lich">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>42</height>
+         </size>
+        </property>
+       </widget>
       </item>
       <item row="2" column="2">
        <widget class="QLabel" name="label">
@@ -98,6 +168,18 @@
       </item>
       <item row="3" column="2">
        <widget class="QComboBox" name="comboBoxTrangThai">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>42</height>
+         </size>
+        </property>
         <item>
          <property name="text">
           <string>Chờ Khám</string>
@@ -128,7 +210,20 @@
        </widget>
       </item>
       <item row="5" column="0">
-       <widget class="QLineEdit" name="txtNgayKham"/>
+       <widget class="QLineEdit" name="txtNgayKham">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>42</height>
+         </size>
+        </property>
+       </widget>
       </item>
       <item row="4" column="1">
        <widget class="QLabel" name="label">
@@ -138,17 +233,42 @@
        </widget>
       </item>
       <item row="5" column="1">
-       <widget class="QLineEdit" name="txtGioKham"/>
+       <widget class="QLineEdit" name="txtGioKham">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>42</height>
+         </size>
+        </property>
+       </widget>
       </item>
       <item row="4" column="2">
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Ca Làm (Xác định Bác sĩ)</string>
+         <string>Ca Làm</string>
         </property>
        </widget>
       </item>
       <item row="5" column="2">
        <widget class="QComboBox" name="cboCaLamLich">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>42</height>
+         </size>
+        </property>
         <item>
          <property name="text">
           <string>1 - Ca Sáng</string>

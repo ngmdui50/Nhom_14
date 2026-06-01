@@ -135,6 +135,21 @@ class BacSiController:
         }
 
     @staticmethod
+    def get_full_schedule_map(bacsi_id):
+        schedule_map = BacSiController.get_schedule_map(bacsi_id)
+        if schedule_map:
+            return schedule_map
+
+        legacy_ids = BacSiController.get_legacy_ca_ids(bacsi_id)
+        if not legacy_ids:
+            return {}
+
+        full_schedule = {}
+        for thu in range(7):
+            full_schedule[thu] = legacy_ids[thu % len(legacy_ids)]
+        return full_schedule
+
+    @staticmethod
     def save_weekly_schedule(bacsi_id, schedule_map):
         BacSiController.ensure_weekly_schedule_table()
         execute_query("DELETE FROM BacSi_CaLam WHERE bacsi_id = ?", (bacsi_id,))

@@ -279,17 +279,17 @@ QFrame#toastCard {
 }
 
 QMessageBox {
-    background: #f8fbff;
+    background: #151A27;
 }
 
 QMessageBox QWidget {
-    background: #f8fbff;
-    color: #172033;
+    background: #151A27;
+    color: #E2E8F0;
 }
 
 QMessageBox QLabel {
     background: transparent;
-    color: #172033;
+    color: #E2E8F0;
     font-size: 13px;
     min-width: 240px;
 }
@@ -298,23 +298,79 @@ QMessageBox QPushButton {
     min-width: 88px;
     text-align: center;
     padding: 8px 14px;
-    background: #e8f1ff;
-    color: #1d4ed8;
-    border: 1px solid #bfdbfe;
+    background: #60a5fa;
+    color: #ffffff;
+    border: 1px solid #93c5fd;
     border-radius: 12px;
     font-weight: 700;
 }
 
 QMessageBox QPushButton:hover {
-    background: #dbeafe;
-    color: #1e40af;
-    border: 1px solid #93c5fd;
+    background: #3b82f6;
+    color: #ffffff;
+    border: 1px solid #60a5fa;
 }
 
 QMessageBox QPushButton:pressed {
-    background: #bfdbfe;
-    color: #1e3a8a;
+    background: #2563eb;
+    color: #ffffff;
+    border: 1px solid #3b82f6;
+}
+
+QMessageBox QPushButton:disabled {
+    background: #94a3b8;
+    color: #ffffff;
+    border: 1px solid #cbd5e1;
+}
+
+QInputDialog {
+    background: #151A27;
+}
+
+QInputDialog QWidget {
+    background: #151A27;
+    color: #E2E8F0;
+}
+
+QInputDialog QLabel {
+    background: transparent;
+    color: #E2E8F0;
+    font-size: 13px;
+}
+
+QInputDialog QPlainTextEdit,
+QInputDialog QTextEdit,
+QInputDialog QLineEdit {
+    background: #1E2538;
+    color: #E2E8F0;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 8px 10px;
+    selection-background-color: #60a5fa;
+    selection-color: #ffffff;
+}
+
+QInputDialog QPushButton {
+    min-width: 88px;
+    text-align: center;
+    padding: 8px 14px;
+    background: #60a5fa;
+    color: #ffffff;
+    border: 1px solid #93c5fd;
+    border-radius: 12px;
+    font-weight: 700;
+}
+
+QInputDialog QPushButton:hover {
+    background: #3b82f6;
+    color: #ffffff;
     border: 1px solid #60a5fa;
+}
+
+QInputDialog QPushButton:pressed {
+    background: #2563eb;
+    color: #ffffff;
+    border: 1px solid #3b82f6;
 }
 
 QLabel#toastTitle {

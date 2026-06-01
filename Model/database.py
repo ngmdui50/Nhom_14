@@ -1,7 +1,11 @@
+import os
 import sqlite3
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DB_PATH = os.path.join(BASE_DIR, "CSDLBTL.db")
+
 def create_tables():
-    conn = sqlite3.connect("CSDLBTL.db")
+    conn = sqlite3.connect(DB_PATH)
     conn.execute("PRAGMA foreign_keys = ON")
     cursor = conn.cursor()
 
@@ -70,7 +74,7 @@ def create_tables():
 
     print(" Đã tạo đầy đủ các bảng!")
 def insert_sample_data():
-    conn = sqlite3.connect("CSDLBTL.db")
+    conn = sqlite3.connect(DB_PATH)
     conn.execute("PRAGMA foreign_keys = ON")
     cursor = conn.cursor()
 
