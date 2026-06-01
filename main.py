@@ -330,10 +330,11 @@ class MainApp(QMainWindow):
     def do_lich_tuan_bac_si_len_form(self, bacsi_id):
         f = self.forms["BS"]
         self.setup_lich_tuan_bac_si_ui()
-        schedule_map = BacSiController.get_schedule_map(bacsi_id)
-        legacy_ids = BacSiController.get_legacy_ca_ids(bacsi_id)
-        if not schedule_map and len(legacy_ids) == 1:
-            schedule_map = {thu: legacy_ids[0] for thu in range(7)}
+        # Dùng cùng nguồn dữ liệu với bảng danh sách bác sĩ.
+        # Trước đây bảng đã hiển thị lịch nhờ get_full_schedule_map(),
+        # nhưng các combo T2..CN lại chỉ đọc get_schedule_map() nên dữ liệu
+        # lịch cũ dạng thu_trong_tuan = -1 bị rỗng và vẫn hiện "-- Nghỉ --".
+        schedule_map = BacSiController.get_full_schedule_map(bacsi_id)
         for thu_idx, cbo in getattr(f, "scheduleComboMap", {}).items():
             idx = cbo.findData(schedule_map.get(thu_idx))
             cbo.setCurrentIndex(idx if idx >= 0 else 0)
@@ -421,10 +422,10 @@ class MainApp(QMainWindow):
     def lay_bac_si_dang_xem(self):
         if self.current_role != "bac_si":
             return None
-        table = self.forms["BS"].tableBacSi
-        row = table.currentRow()
-        if row >= 0 and table.item(row, 0):
-            return self.parse_id(table.item(row, 0).text())
+        # Với tài khoản bác sĩ, dữ liệu phải luôn lọc theo chính bác sĩ
+        # đang đăng nhập. Trước đây nếu bảng Bác sĩ đang chọn một dòng khác
+        # thì danh sách bệnh nhân bị lọc theo dòng đó, dẫn tới thiếu bệnh nhân
+        # dù tab Lịch khám vẫn hiển thị đúng lịch của bác sĩ đăng nhập.
         return self.current_doctor_id
 
     def loc_benh_nhan_theo_bac_si(self, ds_benh_nhan, bacsi_id=None):

@@ -13,6 +13,30 @@
   <property name="windowTitle">
    <string>Thêm Bệnh Nhân Mới</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QDialog#FormThemBenhNhan {
+    background-color: #1f1f1f;
+}
+
+QDialog#FormThemBenhNhan QLabel {
+    color: #e2e8f0;
+    font-weight: 600;
+}
+
+QDialog#FormThemBenhNhan QLineEdit,
+QDialog#FormThemBenhNhan QComboBox {
+    background-color: #f8fafc;
+    color: #0f172a;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 8px 14px;
+}
+
+QDialog#FormThemBenhNhan QLineEdit:focus,
+QDialog#FormThemBenhNhan QComboBox:focus {
+    border: 2px solid #3b82f6;
+}</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QFormLayout" name="formLayout">
